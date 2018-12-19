@@ -6,7 +6,7 @@ game_t *create_game(int pixel_size)
 	if (!game)
 		return NULL;
 
-	game->player = create_player(0, 0, 16, 18);
+	game->player = create_player(0, 0);
 	if (!game->player)
 		return NULL;
 

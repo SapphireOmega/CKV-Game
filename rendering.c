@@ -20,13 +20,15 @@ void render_player(SDL_Renderer *renderer, const player_t *player, int pixel_siz
 	SDL_Rect src;
 	src.x = 0;
 	src.y = 0;
-	src.w = 16;
-	src.h = 18;
+	src.w = player->render_rect.w;
+	src.h = player->render_rect.h;
+
 	SDL_Rect dst;
-	dst.x = player->rect.x * pixel_size;
-	dst.y = player->rect.y * pixel_size;
-	dst.w = player->rect.w * pixel_size;
-	dst.h = player->rect.h * pixel_size;
+	dst.x = player->render_rect.x * pixel_size;
+	dst.y = player->render_rect.y * pixel_size;
+	dst.w = player->render_rect.w * pixel_size;
+	dst.h = player->render_rect.h * pixel_size;
+
 	SDL_RenderCopy(renderer, player_texture, &src, &dst);
 }
 
@@ -51,9 +53,9 @@ void render_tiles(SDL_Renderer *renderer, const tile_vec_t *tiles, int pixel_siz
 
 void render_playing_state(SDL_Renderer *renderer, const game_t *game)
 {
-	render_player(renderer, game->player, game->pixel_size);
 	if (game->tiles.vec != NULL)
 		render_tiles(renderer, &game->tiles, game->pixel_size);
+	render_player(renderer, game->player, game->pixel_size);
 }
 
 void render_game(SDL_Renderer *renderer, const game_t *game)

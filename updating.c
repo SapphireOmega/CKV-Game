@@ -9,50 +9,56 @@ void update_player(player_t *player, tile_vec_t *tile_vec, float dt)
 	player->vel_y += GRAV * dt;
 
 	player->pos_x += player->vel_x * dt;
-	player->rect.x = (int)player->pos_x;
+	player->collider.x = (int)player->pos_x;
+	player->render_rect.x = player->collider.x - player->x_render_offset;
 	for (int i = 0; i < tile_vec->used; i++) {
 		tile_t tile = *tile_vec->vec[i];
-		if (player->rect.x + player->rect.w > tile.rect.x &&
-			player->rect.y < tile.rect.y + tile.rect.h &&
-			player->rect.y + player->rect.h > tile.rect.y &&
-			player->rect.x < tile.rect.x)
+		if (player->collider.x + player->collider.w > tile.rect.x &&
+			player->collider.y < tile.rect.y + tile.rect.h &&
+			player->collider.y + player->collider.h > tile.rect.y &&
+			player->collider.x < tile.rect.x)
 		{
-			player->pos_x = tile.rect.x - player->rect.w;
-			player->rect.x = (int)player->pos_x;
+			player->pos_x = tile.rect.x - player->collider.w;
+			player->collider.x = (int)player->pos_x;
+			player->render_rect.x = player->collider.x - player->x_render_offset;
 		}
-		else if (player->rect.x < tile.rect.x + tile.rect.w &&
-			player->rect.y < tile.rect.y + tile.rect.h &&
-			player->rect.y + player->rect.h > tile.rect.y &&
-			player->rect.x + player->rect.w > tile.rect.x + tile.rect.w)
+		else if (player->collider.x < tile.rect.x + tile.rect.w &&
+			player->collider.y < tile.rect.y + tile.rect.h &&
+			player->collider.y + player->collider.h > tile.rect.y &&
+			player->collider.x + player->collider.w > tile.rect.x + tile.rect.w)
 		{
 			player->pos_x = tile.rect.x + tile.rect.w;
-			player->rect.x = (int)player->pos_x;
+			player->collider.x = (int)player->pos_x;
+			player->render_rect.x = player->collider.x - player->x_render_offset;
 		}
 	}
 
 	player->onground = 0;
 	player->pos_y += player->vel_y * dt;
-	player->rect.y = (int)player->pos_y;
+	player->collider.y = (int)player->pos_y;
+	player->render_rect.y = player->collider.y - player->x_render_offset;
 	for (int i = 0; i < tile_vec->used; i++) {
 		tile_t tile = *tile_vec->vec[i];
-		if (player->rect.y + player->rect.h >= tile.rect.y &&
-			player->rect.x + player->rect.w > tile.rect.x &&
-			player->rect.x < tile.rect.x + tile.rect.w &&
-			player->rect.y < tile.rect.y)
+		if (player->collider.y + player->collider.h >= tile.rect.y &&
+			player->collider.x + player->collider.w > tile.rect.x &&
+			player->collider.x < tile.rect.x + tile.rect.w &&
+			player->collider.y < tile.rect.y)
 		{
 			player->vel_y = 0.0f;
-			player->pos_y = tile.rect.y - player->rect.h;
-			player->rect.y = (int)player->pos_y;
+			player->pos_y = tile.rect.y - player->collider.h;
+			player->collider.y = (int)player->pos_y;
+			player->render_rect.y = player->collider.y - player->x_render_offset;
 			player->onground = 1;
 		}
-		else if (player->rect.y < tile.rect.y + tile.rect.h &&
-			player->rect.x + player->rect.w > tile.rect.x &&
-			player->rect.x < tile.rect.x + tile.rect.w &&
-			player->rect.y + player->rect.h > tile.rect.y + tile.rect.h)
+		else if (player->collider.y < tile.rect.y + tile.rect.h &&
+			player->collider.x + player->collider.w > tile.rect.x &&
+			player->collider.x < tile.rect.x + tile.rect.w &&
+			player->collider.y + player->collider.h > tile.rect.y + tile.rect.h)
 		{
 			player->vel_y = 0.0f;
 			player->pos_y = tile.rect.y + tile.rect.h;
-			player->rect.y = (int)player->pos_y;
+			player->collider.y = (int)player->pos_y;
+			player->render_rect.y = player->collider.y - player->x_render_offset;
 		}
 	}
 }

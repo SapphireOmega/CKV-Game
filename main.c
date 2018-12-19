@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 										  SDL_WINDOWPOS_CENTERED, 
 										  SDL_WINDOWPOS_CENTERED,
 										  display_mode.w, display_mode.h,
-										  SDL_WINDOW_FULLSCREEN);
+										  SDL_WINDOW_FULLSCREEN_DESKTOP);
 	if (window == NULL) {
 		fprintf(stderr, "Error creating window: %s\n", SDL_GetError());
 		return EXIT_FAILURE;
@@ -65,27 +65,27 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 	
-	if (push_tile_vec(&game->tiles, create_tile(grass, 0, 100, 16, 16)) != 0) {
+	if (push_tile_vec(&game->tiles, create_tile(grass, 0, 200, 16, 16)) != 0) {
 		fprintf(stderr, "Error pushing back tile to tile_vec\n");
 		return EXIT_FAILURE;
 	}
 
-	if (push_tile_vec(&game->tiles, create_tile(grass, 16, 100, 16, 16)) != 0) {
+	if (push_tile_vec(&game->tiles, create_tile(grass, 16, 200, 16, 16)) != 0) {
 		fprintf(stderr, "Error pushing back tile to tile_vec\n");
 		return EXIT_FAILURE;
 	}
 
-	if (push_tile_vec(&game->tiles, create_tile(dirt, 32, 100, 16, 16)) != 0) {
+	if (push_tile_vec(&game->tiles, create_tile(dirt, 32, 200, 16, 16)) != 0) {
 		fprintf(stderr, "Error pushing back tile to tile_vec\n");
 		return EXIT_FAILURE;
 	}
 
-	if (push_tile_vec(&game->tiles,create_tile(grass,32,84,16,16))!=0) {
+	if (push_tile_vec(&game->tiles, create_tile(grass, 32, 184, 16, 16)) != 0) {
 		fprintf(stderr, "Error pushing back tile to tile_vec\n");
 		return EXIT_FAILURE;
 	}
 
-	if (push_tile_vec(&game->tiles, create_tile(grass, 48, 100, 16, 16)) != 0) {
+	if (push_tile_vec(&game->tiles, create_tile(grass, 48, 200, 16, 16)) != 0) {
 		fprintf(stderr, "Error pushing back tile to tile_vec\n");
 		return EXIT_FAILURE;
 	}
