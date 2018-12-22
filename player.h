@@ -12,6 +12,7 @@ typedef struct {
 	int onground;
 	int left;
 	int right;
+	int flip;
 } player_t;
 
 player_t *create_player(int x, int y);

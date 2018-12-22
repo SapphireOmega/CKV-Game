@@ -21,7 +21,11 @@ void render_player(SDL_Renderer *renderer, const player_t *player, int pixel_siz
 	dst.w = player->rect.w * pixel_size;
 	dst.h = player->rect.h * pixel_size;
 
-	SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+	if (player->flip) {
+		SDL_RenderCopyEx(renderer, tile_sheet, &src, &dst, 0, NULL, SDL_FLIP_HORIZONTAL);
+	} else {
+		SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+	}
 }
 
 void render_tiles(SDL_Renderer *renderer, const tile_vec_t *tiles, int pixel_size)

@@ -17,6 +17,7 @@ player_t *create_player(int x, int y)
 	player->onground = 0;
 	player->left = 0;
 	player->right = 0;
+	player->flip = 0;
 
 	return player;
 }

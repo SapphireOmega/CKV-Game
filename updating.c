@@ -59,6 +59,11 @@ void update_player(player_t *player, tile_vec_t *tile_vec, float dt)
 			}
 		}
 	}
+
+	if (player->left && !player->right && !player->flip)
+		player->flip = 1;
+	else if (player->right && !player->left && player->flip)
+		player->flip = 0;
 }
 
 void update_playing_state(game_t *game, float dt)
@@ -74,17 +79,17 @@ void update_playing_state(game_t *game, float dt)
 			case SDLK_ESCAPE:
 				game->state = quit;
 				break;
-			case SDLK_w:
+			case SDLK_UP:
 				if (game->player->onground)
 					game->player->vel_y -= JUMP;
 				break;
-			case SDLK_a:
+			case SDLK_LEFT:
 				if (!game->player->left) {
 					game->player->left = 1;
 					game->player->vel_x -= SPEED;
 				}
 				break;
-			case SDLK_d:
+			case SDLK_RIGHT:
 				if (!game->player->right) {
 					game->player->right = 1;
 					game->player->vel_x += SPEED;
@@ -94,11 +99,11 @@ void update_playing_state(game_t *game, float dt)
 			break;
 		case SDL_KEYUP:
 			switch (event.key.keysym.sym) {
-			case SDLK_a:
+			case SDLK_LEFT:
 				game->player->left = 0;
 				game->player->vel_x += SPEED;
 				break;
-			case SDLK_d:
+			case SDLK_RIGHT:
 				game->player->right = 0;
 				game->player->vel_x -= SPEED;
 				break;
