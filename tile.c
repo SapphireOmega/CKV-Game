@@ -5,11 +5,22 @@ tile_t *create_tile(tiletype t, int x, int y, int w, int h)
 	tile_t *tile = (tile_t*)malloc(sizeof(tile_t));
 	if (!tile)
 		return NULL;
+
 	tile->rect.x = x;
 	tile->rect.y = y;
 	tile->rect.w = w;
 	tile->rect.h = h;
 	tile->type = t;
+
+	switch (t) {
+	case grass:
+		tile->collidable = 0;
+		break;
+	default:
+		tile->collidable = 1;
+		break;
+	}
+
 	return tile;
 }
 

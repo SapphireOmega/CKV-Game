@@ -65,29 +65,21 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 	
-	if (push_tile_vec(&game->tiles, create_tile(grass, 0, 200, 16, 16)) != 0) {
-		fprintf(stderr, "Error pushing back tile to tile_vec\n");
-		return EXIT_FAILURE;
-	}
+	for (int x = 0; x < 32; x++) {
+		if (push_tile_vec(&game->tiles, create_tile(grass, x * 16, 184, 16, 16)) != 0) {
+			fprintf(stderr, "Error pushing back tile to tile_vec\n");
+			return EXIT_FAILURE;
+		}
 
-	if (push_tile_vec(&game->tiles, create_tile(grass, 16, 200, 16, 16)) != 0) {
-		fprintf(stderr, "Error pushing back tile to tile_vec\n");
-		return EXIT_FAILURE;
-	}
+		if (push_tile_vec(&game->tiles, create_tile(dirt, x * 16, 200, 16, 16)) != 0) {
+			fprintf(stderr, "Error pushing back tile to tile_vec\n");
+			return EXIT_FAILURE;
+		}
 
-	if (push_tile_vec(&game->tiles, create_tile(dirt, 32, 200, 16, 16)) != 0) {
-		fprintf(stderr, "Error pushing back tile to tile_vec\n");
-		return EXIT_FAILURE;
-	}
-
-	if (push_tile_vec(&game->tiles, create_tile(grass, 32, 184, 16, 16)) != 0) {
-		fprintf(stderr, "Error pushing back tile to tile_vec\n");
-		return EXIT_FAILURE;
-	}
-
-	if (push_tile_vec(&game->tiles, create_tile(grass, 48, 200, 16, 16)) != 0) {
-		fprintf(stderr, "Error pushing back tile to tile_vec\n");
-		return EXIT_FAILURE;
+		if (push_tile_vec(&game->tiles, create_tile(stone, x * 16, 216, 16, 16)) != 0) {
+			fprintf(stderr, "Error pushing back tile to tile_vec\n");
+			return EXIT_FAILURE;
+		}
 	}
 
 	Uint32 old_time = 0;
@@ -101,7 +93,7 @@ int main(int argc, char *argv[])
 
 		update_game(game, dt);
 
-		SDL_SetRenderDrawColor(renderer, 135, 155, 195, 255);
+		SDL_SetRenderDrawColor(renderer, 49, 162, 242, 255);
 		SDL_RenderClear(renderer);
 		render_game(renderer, game);
 		SDL_RenderPresent(renderer);

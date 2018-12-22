@@ -6,9 +6,7 @@
 
 #include "game.h"
 
-static SDL_Texture *dirt_texture;
-static SDL_Texture *grass_texture;
-static SDL_Texture *player_texture;
+static SDL_Texture *tile_sheet;
 
 void load_textures(SDL_Renderer *renderer);
 void render_game(SDL_Renderer *renderer, const game_t *game);

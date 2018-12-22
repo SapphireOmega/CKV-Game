@@ -4,13 +4,15 @@
 #include <SDL2/SDL.h>
 
 typedef enum {
+	grass,
 	dirt,
-	grass
+	stone
 } tiletype;
 
 typedef struct {
 	SDL_Rect rect;
 	tiletype type;
+	int collidable;
 } tile_t;
 
 tile_t *create_tile(tiletype t, int x, int y, int w, int h);

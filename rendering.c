@@ -1,40 +1,35 @@
 #include "rendering.h"
 
-const SDL_Color player_color = { .r = 190, .g = 190, .b = 190 };
-
 void load_textures(SDL_Renderer* renderer)
 {
-	SDL_Surface *dirt_surface = IMG_Load("assets/dirt.png");
-	SDL_Surface *grass_surface = IMG_Load("assets/grass.png");
-	SDL_Surface *player_surface = IMG_Load("assets/little_guy.png");
-	dirt_texture = SDL_CreateTextureFromSurface(renderer, dirt_surface);
-	grass_texture = SDL_CreateTextureFromSurface(renderer, grass_surface);
-	player_texture = SDL_CreateTextureFromSurface(renderer, player_surface);
-	SDL_FreeSurface(dirt_surface);
-	SDL_FreeSurface(grass_surface);
-	SDL_FreeSurface(player_surface);
+	SDL_Surface *tile_sheet_surface = IMG_Load("assets/game_tile_set.png");
+	tile_sheet = SDL_CreateTextureFromSurface(renderer, tile_sheet_surface);
+	SDL_FreeSurface(tile_sheet_surface);
 }
 
 void render_player(SDL_Renderer *renderer, const player_t *player, int pixel_size)
 {
 	SDL_Rect src;
-	src.x = 0;
-	src.y = 0;
-	src.w = player->render_rect.w;
-	src.h = player->render_rect.h;
+	src.x = 2;
+	src.y = 16;
+	src.w = player->rect.w;
+	src.h = player->rect.h;
 
 	SDL_Rect dst;
-	dst.x = player->render_rect.x * pixel_size;
-	dst.y = player->render_rect.y * pixel_size;
-	dst.w = player->render_rect.w * pixel_size;
-	dst.h = player->render_rect.h * pixel_size;
+	dst.x = player->rect.x * pixel_size;
+	dst.y = player->rect.y * pixel_size;
+	dst.w = player->rect.w * pixel_size;
+	dst.h = player->rect.h * pixel_size;
 
-	SDL_RenderCopy(renderer, player_texture, &src, &dst);
+	SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 }
 
 void render_tiles(SDL_Renderer *renderer, const tile_vec_t *tiles, int pixel_size)
 {
 	for (int i = 0; i < tiles->used; i++) {
+		SDL_Rect src;
+		src.w = tiles->vec[i]->rect.w;
+		src.h = tiles->vec[i]->rect.h;
 		SDL_Rect dst;
 		dst.x = tiles->vec[i]->rect.x * pixel_size;
 		dst.y = tiles->vec[i]->rect.y * pixel_size;
@@ -42,11 +37,19 @@ void render_tiles(SDL_Renderer *renderer, const tile_vec_t *tiles, int pixel_siz
 		dst.h = tiles->vec[i]->rect.h * pixel_size;
 		switch (tiles->vec[i]->type) {
 		case dirt:
-			SDL_RenderCopy(renderer, dirt_texture, NULL, &dst);
+			src.x = 0;
+			src.y = 48;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 			break;
 		case grass:
-			SDL_RenderCopy(renderer, grass_texture, NULL, &dst);
+			src.x = 0;
+			src.y = 32;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 			break;
+		case stone:
+			src.x = 0;
+			src.y = 64;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 		}
 	}
 }

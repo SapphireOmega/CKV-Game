@@ -4,10 +4,7 @@
 #include <SDL2/SDL.h>
 
 typedef struct {
-	SDL_Rect collider;
-	SDL_Rect render_rect;
-	int x_render_offset;
-	int y_render_offset;
+	SDL_Rect rect;
 	float pos_x;
 	float pos_y;
 	float vel_x;
