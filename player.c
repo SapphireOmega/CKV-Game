@@ -8,7 +8,7 @@ player_t *create_player(int x, int y)
 
 	player->rect.x = x;
 	player->rect.y = y;
-	player->rect.w = 13;
+	player->rect.w = 15;
 	player->rect.h = 16;
 	player->pos_x = x;
 	player->pos_y = y;

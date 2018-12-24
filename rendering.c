@@ -2,7 +2,7 @@
 
 void load_textures(SDL_Renderer* renderer)
 {
-	SDL_Surface *tile_sheet_surface = IMG_Load("assets/game_tile_set.png");
+	SDL_Surface *tile_sheet_surface = IMG_Load("assets/tilesheet.png");
 	tile_sheet = SDL_CreateTextureFromSurface(renderer, tile_sheet_surface);
 	SDL_FreeSurface(tile_sheet_surface);
 }
@@ -10,8 +10,8 @@ void load_textures(SDL_Renderer* renderer)
 void render_player(SDL_Renderer *renderer, const player_t *player, int pixel_size)
 {
 	SDL_Rect src;
-	src.x = 2;
-	src.y = 16;
+	src.x = 49;
+	src.y = 0;
 	src.w = player->rect.w;
 	src.h = player->rect.h;
 
@@ -41,18 +41,18 @@ void render_tiles(SDL_Renderer *renderer, const tile_vec_t *tiles, int pixel_siz
 		dst.h = tiles->vec[i]->rect.h * pixel_size;
 		switch (tiles->vec[i]->type) {
 		case dirt:
-			src.x = 0;
-			src.y = 48;
+			src.x = 16;
+			src.y = 16;
 			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 			break;
 		case grass:
 			src.x = 0;
-			src.y = 32;
+			src.y = 0;
 			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 			break;
 		case stone:
-			src.x = 0;
-			src.y = 64;
+			src.x = 16;
+			src.y = 48;
 			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 		}
 	}
@@ -60,9 +60,9 @@ void render_tiles(SDL_Renderer *renderer, const tile_vec_t *tiles, int pixel_siz
 
 void render_playing_state(SDL_Renderer *renderer, const game_t *game)
 {
+	render_player(renderer, game->player, game->pixel_size);
 	if (game->tiles.vec != NULL)
 		render_tiles(renderer, &game->tiles, game->pixel_size);
-	render_player(renderer, game->player, game->pixel_size);
 }
 
 void render_game(SDL_Renderer *renderer, const game_t *game)

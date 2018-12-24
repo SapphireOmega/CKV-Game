@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 
 		update_game(game, dt);
 
-		SDL_SetRenderDrawColor(renderer, 49, 162, 242, 255);
+		SDL_SetRenderDrawColor(renderer, 99, 155, 255, 255);
 		SDL_RenderClear(renderer);
 		render_game(renderer, game);
 		SDL_RenderPresent(renderer);
