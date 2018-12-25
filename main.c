@@ -12,10 +12,8 @@
 /*
 --- TODO ---
 * Deallocate the game structure, player structure etc...
-* Block placement and destruction
 * Inventory
 * UI
-* Perlin noise
 */
 
 int main(int argc, char *argv[])
@@ -37,13 +35,9 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	float scale;
-	if (display_mode.w > display_mode.h)
-		scale = display_mode.h / 1080.0f;
-	else
-		scale = display_mode.w / 1080.0f;
-
+	float scale = display_mode.w / 2560.0f;
 	int pixel_size = PIXELSIZE * scale;
+	scale = (float)pixel_size / (float)PIXELSIZE;
 
 	const Uint32 flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
 	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, flags);
@@ -54,7 +48,7 @@ int main(int argc, char *argv[])
 
 	load_textures(renderer);
 
-	game_t *game = create_game(pixel_size);
+	game_t *game = create_game(&display_mode, pixel_size, scale);
 	if (!game) {
 		fprintf(stderr, "Error creating game\n");
 		return EXIT_FAILURE;
@@ -65,18 +59,18 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 	
-	for (int x = 0; x < 32; x++) {
-		if (push_tile_vec(&game->tiles, create_tile(grass, x * 16, 184, 16, 16)) != 0) {
+	for (int x = 0; x < 35; x++) {
+		if (push_tile_vec(&game->tiles, create_tile(grass, x * 16, 130, 16, 16)) != 0) {
 			fprintf(stderr, "Error pushing back tile to tile_vec\n");
 			return EXIT_FAILURE;
 		}
 
-		if (push_tile_vec(&game->tiles, create_tile(dirt, x * 16, 200, 16, 16)) != 0) {
+		if (push_tile_vec(&game->tiles, create_tile(dirt, x * 16, 146, 16, 16)) != 0) {
 			fprintf(stderr, "Error pushing back tile to tile_vec\n");
 			return EXIT_FAILURE;
 		}
 
-		if (push_tile_vec(&game->tiles, create_tile(stone, x * 16, 216, 16, 16)) != 0) {
+		if (push_tile_vec(&game->tiles, create_tile(stone, x * 16, 162, 16, 16)) != 0) {
 			fprintf(stderr, "Error pushing back tile to tile_vec\n");
 			return EXIT_FAILURE;
 		}
@@ -96,6 +90,15 @@ int main(int argc, char *argv[])
 		SDL_SetRenderDrawColor(renderer, 99, 155, 255, 255);
 		SDL_RenderClear(renderer);
 		render_game(renderer, game);
+		// SDL_Rect bar;
+		// bar.x = 0;
+		// bar.y = 0;
+		// bar.w = display_mode.w;
+		// bar.h = bar_height;
+		// SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+		// SDL_RenderFillRect(renderer, &bar);
+		// bar.y = display_mode.h - bar.h;
+		// SDL_RenderFillRect(renderer, &bar);
 		SDL_RenderPresent(renderer);
 	}
 

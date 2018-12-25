@@ -1,6 +1,6 @@
 #include "game.h"
 
-game_t *create_game(int pixel_size)
+game_t *create_game(SDL_DisplayMode *display_mode, int pixel_size, float scale)
 {
 	game_t *game = (game_t*)malloc(sizeof(game_t));
 	if (!game)
@@ -11,6 +11,12 @@ game_t *create_game(int pixel_size)
 		return NULL;
 
 	game->pixel_size = pixel_size;
+	game->scale = scale;
+	game->display_mode = display_mode;
+	game->window.w = display_mode->w;
+	game->window.h = scale * 1080;
+	game->window.x = 0;
+	game->window.y = (display_mode->h - game->window.h) / 2;
 	game->state = playing;
 
 	return game;
