@@ -58,7 +58,7 @@ void render_tiles(SDL_Renderer *renderer, const game_window_t *game_window, cons
 	}
 }
 
-void render_bar(SDL_Renderer *renderer, const game_window_t *game_window, SDL_DisplayMode *display_mode)
+void render_bars(SDL_Renderer *renderer, const game_window_t *game_window, SDL_DisplayMode *display_mode)
 {
 	SDL_Rect bar;
 	bar.x = 0;
@@ -77,7 +77,7 @@ void render_playing_state(SDL_Renderer *renderer, const game_t *game)
 	if (game->tiles.vec != NULL)
 		render_tiles(renderer, &game->window, &game->tiles, game->pixel_size);
 	
-	render_bar(renderer, &game->window, game->display_mode);
+	render_bars(renderer, &game->window, game->display_mode);
 }
 
 void render_game(SDL_Renderer *renderer, const game_t *game)
