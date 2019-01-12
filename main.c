@@ -60,20 +60,30 @@ int main(int argc, char *argv[])
 	}
 	
 	for (int x = 0; x < 35; x++) {
-		if (push_tile_vec(&game->tiles, create_tile(grass, x * 16, 130, 16, 16)) != 0) {
+		if (push_tile_vec(&game->tiles, create_tile(grass, x * 16, 160, 16, 16)) != 0) {
 			fprintf(stderr, "Error pushing back tile to tile_vec\n");
 			return EXIT_FAILURE;
 		}
 
-		if (push_tile_vec(&game->tiles, create_tile(dirt, x * 16, 146, 16, 16)) != 0) {
+		if (push_tile_vec(&game->tiles, create_tile(grassy_dirt, x * 16, 176, 16, 16)) != 0) {
 			fprintf(stderr, "Error pushing back tile to tile_vec\n");
 			return EXIT_FAILURE;
 		}
 
-		if (push_tile_vec(&game->tiles, create_tile(stone, x * 16, 162, 16, 16)) != 0) {
+		if (push_tile_vec(&game->tiles, create_tile(dirt, x * 16, 192, 16, 16)) != 0) {
 			fprintf(stderr, "Error pushing back tile to tile_vec\n");
 			return EXIT_FAILURE;
 		}
+
+		if (push_tile_vec(&game->tiles, create_tile(dirt, x * 16, 208, 16, 16)) != 0) {
+			fprintf(stderr, "Error pushing back tile to tile_vec\n");
+			return EXIT_FAILURE;
+		}
+
+		// if (push_tile_vec(&game->tiles, create_tile(dirt, x * 16, 214, 16, 16)) != 0) {
+		// 	fprintf(stderr, "Error pushing back tile to tile_vec\n");
+		// 	return EXIT_FAILURE;
+		// }
 	}
 
 	Uint32 old_time = 0;
@@ -90,15 +100,6 @@ int main(int argc, char *argv[])
 		SDL_SetRenderDrawColor(renderer, 99, 155, 255, 255);
 		SDL_RenderClear(renderer);
 		render_game(renderer, game);
-		// SDL_Rect bar;
-		// bar.x = 0;
-		// bar.y = 0;
-		// bar.w = display_mode.w;
-		// bar.h = bar_height;
-		// SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-		// SDL_RenderFillRect(renderer, &bar);
-		// bar.y = display_mode.h - bar.h;
-		// SDL_RenderFillRect(renderer, &bar);
 		SDL_RenderPresent(renderer);
 	}
 

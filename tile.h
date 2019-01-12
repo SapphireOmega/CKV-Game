@@ -5,8 +5,8 @@
 
 typedef enum {
 	grass,
+	grassy_dirt,
 	dirt,
-	stone
 } tiletype;
 
 typedef struct {

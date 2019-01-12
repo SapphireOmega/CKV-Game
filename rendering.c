@@ -40,19 +40,19 @@ void render_tiles(SDL_Renderer *renderer, const game_window_t *game_window, cons
 		dst.w = tiles->vec[i]->rect.w * pixel_size;
 		dst.h = tiles->vec[i]->rect.h * pixel_size;
 		switch (tiles->vec[i]->type) {
-		case dirt:
-			src.x = 16;
-			src.y = 16;
-			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
-			break;
 		case grass:
 			src.x = 0;
 			src.y = 0;
 			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 			break;
-		case stone:
+		case grassy_dirt:
 			src.x = 16;
-			src.y = 48;
+			src.y = 16;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		case dirt:
+			src.x = 16;
+			src.y = 32;
 			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 		}
 	}
