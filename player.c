@@ -1,8 +1,8 @@
 #include "player.h"
 
-player_t *create_player(int x, int y)
+Player *create_player(int x, int y)
 {
-	player_t *player = (player_t*)malloc(sizeof(player_t));
+	Player *player = (Player*)malloc(sizeof(Player));
 	if (!player)
 		return NULL;
 

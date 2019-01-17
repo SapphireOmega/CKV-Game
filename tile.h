@@ -7,25 +7,26 @@ typedef enum {
 	grass,
 	grassy_dirt,
 	dirt,
-} tiletype;
+	dirt_bottom,
+} TileType;
 
 typedef struct {
 	SDL_Rect rect;
-	tiletype type;
+	TileType type;
 	int collidable;
-} tile_t;
+} Tile;
 
-tile_t *create_tile(tiletype t, int x, int y, int w, int h);
+Tile *create_tile(TileType t, int x, int y, int w, int h);
 
 typedef struct {
-	tile_t **vec;
+	Tile **vec;
 	size_t used;
 	size_t size;
-} tile_vec_t;
+} TileVec;
 
-int init_tile_vec(tile_vec_t *tile_vec, size_t init_size);
-int push_tile_vec(tile_vec_t *tile_vec, tile_t *tile);
-//int pop_tile_vec(tile_vec_t *tile_vec);
-void free_tile_vec(tile_vec_t *tile_vec);
+int init_tile_vec(TileVec *tile_vec, size_t init_size);
+int push_tile_vec(TileVec *tile_vec, Tile *tile);
+//int pop_tile_vec(tile_vec *tile_vec);
+void free_tile_vec(TileVec *tile_vec);
 
 #endif // TILE_H_

@@ -13,8 +13,8 @@ typedef struct {
 	int left;
 	int right;
 	int flip;
-} player_t;
+} Player;
 
-player_t *create_player(int x, int y);
+Player *create_player(int x, int y);
 
 #endif // PLAYER_H_

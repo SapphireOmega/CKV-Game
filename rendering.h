@@ -9,6 +9,6 @@
 static SDL_Texture *tile_sheet;
 
 void load_textures(SDL_Renderer *renderer);
-void render_game(SDL_Renderer *renderer, const game_t *game);
+void render_game(SDL_Renderer *renderer, const Game *game);
 
 #endif // RENDERING_H_

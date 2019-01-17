@@ -7,7 +7,7 @@ void load_textures(SDL_Renderer* renderer)
 	SDL_FreeSurface(tile_sheet_surface);
 }
 
-void render_player(SDL_Renderer *renderer, const game_window_t *game_window, const player_t *player, int pixel_size)
+void render_player(SDL_Renderer *renderer, const GameWindow *game_window, const Player *player, int pixel_size)
 {
 	SDL_Rect src;
 	src.x = 49;
@@ -28,7 +28,7 @@ void render_player(SDL_Renderer *renderer, const game_window_t *game_window, con
 	}
 }
 
-void render_tiles(SDL_Renderer *renderer, const game_window_t *game_window, const tile_vec_t *tiles, int pixel_size)
+void render_tiles(SDL_Renderer *renderer, const GameWindow *game_window, const TileVec *tiles, int pixel_size)
 {
 	for (int i = 0; i < tiles->used; i++) {
 		SDL_Rect src;
@@ -54,24 +54,40 @@ void render_tiles(SDL_Renderer *renderer, const game_window_t *game_window, cons
 			src.x = 16;
 			src.y = 32;
 			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		case dirt_bottom:
+			src.x = 16;
+			src.y = 48;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		default:
+			SDL_SetRenderDrawColor(renderer, 255, 0, 200, 255);
+			SDL_RenderFillRect(renderer, &dst);
+			break;
 		}
 	}
 }
 
-void render_bars(SDL_Renderer *renderer, const game_window_t *game_window, SDL_DisplayMode *display_mode)
+void render_bars(SDL_Renderer *renderer, const GameWindow *game_window, SDL_DisplayMode *display_mode)
 {
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_Rect bar;
 	bar.x = 0;
 	bar.y = 0;
-	bar.w = display_mode->w;
-	bar.h = (display_mode->h - game_window->h) / 2;
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	bar.w = game_window->x;
+	bar.h = display_mode->h;
 	SDL_RenderFillRect(renderer, &bar);
-	bar.y = display_mode->h - bar.h;
+	bar.x = game_window->x + game_window->w;
+	SDL_RenderFillRect(renderer, &bar);
+	bar.x = game_window->x;
+	bar.w = game_window->w;
+	bar.h = game_window->y;
+	SDL_RenderFillRect(renderer, &bar);
+	bar.y = game_window->y + game_window->h;
 	SDL_RenderFillRect(renderer, &bar);
 }
 
-void render_playing_state(SDL_Renderer *renderer, const game_t *game)
+void render_playing_state(SDL_Renderer *renderer, const Game *game)
 {
 	render_player(renderer, &game->window, game->player, game->pixel_size);
 	if (game->tiles.vec != NULL)
@@ -80,7 +96,7 @@ void render_playing_state(SDL_Renderer *renderer, const game_t *game)
 	render_bars(renderer, &game->window, game->display_mode);
 }
 
-void render_game(SDL_Renderer *renderer, const game_t *game)
+void render_game(SDL_Renderer *renderer, const Game *game)
 {
 	switch (game->state) {
 	case playing:

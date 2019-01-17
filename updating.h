@@ -3,6 +3,6 @@
 
 #include "game.h"
 
-void update_game(game_t *game, float dt);
+void update_game(Game *game, float dt);
 
 #endif // UPDATING_H_

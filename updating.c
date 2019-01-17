@@ -4,14 +4,14 @@
 #define SPEED 100
 #define JUMP 350
 
-void update_player(player_t *player, tile_vec_t *tile_vec, float dt)
+void update_player(Player *player, TileVec *tile_vec, float dt)
 {
 	player->vel_y += GRAV * dt;
 
 	player->pos_x += player->vel_x * dt;
 	player->rect.x = (int)player->pos_x;
 	for (int i = 0; i < tile_vec->used; i++) {
-		tile_t tile = *tile_vec->vec[i];
+		Tile tile = *tile_vec->vec[i];
 		if (tile.collidable) {
 			if (player->rect.x + player->rect.w > tile.rect.x &&
 				player->rect.y < tile.rect.y + tile.rect.h &&
@@ -36,7 +36,7 @@ void update_player(player_t *player, tile_vec_t *tile_vec, float dt)
 	player->pos_y += player->vel_y * dt;
 	player->rect.y = (int)player->pos_y;
 	for (int i = 0; i < tile_vec->used; i++) {
-		tile_t tile = *tile_vec->vec[i];
+		Tile tile = *tile_vec->vec[i];
 		if (tile.collidable) {
 			if (player->rect.y + player->rect.h >= tile.rect.y &&
 				player->rect.x + player->rect.w > tile.rect.x &&
@@ -66,7 +66,7 @@ void update_player(player_t *player, tile_vec_t *tile_vec, float dt)
 		player->flip = 0;
 }
 
-void update_playing_state(game_t *game, float dt)
+void update_playing_state(Game *game, float dt)
 {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
@@ -113,7 +113,7 @@ void update_playing_state(game_t *game, float dt)
 	update_player(game->player, &game->tiles,  dt);
 }
 
-void update_game(game_t *game, float dt)
+void update_game(Game *game, float dt)
 {
 	switch (game->state) {
 	case playing:

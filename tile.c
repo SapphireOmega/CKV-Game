@@ -1,8 +1,8 @@
 #include "tile.h"
 
-tile_t *create_tile(tiletype t, int x, int y, int w, int h)
+Tile *create_tile(TileType t, int x, int y, int w, int h)
 {
-	tile_t *tile = (tile_t*)malloc(sizeof(tile_t));
+	Tile *tile = (Tile*)malloc(sizeof(Tile));
 	if (!tile)
 		return NULL;
 
@@ -24,9 +24,9 @@ tile_t *create_tile(tiletype t, int x, int y, int w, int h)
 	return tile;
 }
 
-int init_tile_vec(tile_vec_t *tile_vec, size_t init_size)
+int init_tile_vec(TileVec *tile_vec, size_t init_size)
 {
-	tile_vec->vec = (tile_t**)malloc(init_size*sizeof(tile_t*));
+	tile_vec->vec = (Tile**)malloc(init_size*sizeof(Tile*));
 	if (!tile_vec)
 		return 1;
 	tile_vec->used = 0;
@@ -34,12 +34,12 @@ int init_tile_vec(tile_vec_t *tile_vec, size_t init_size)
 	return 0;
 }
 
-int push_tile_vec(tile_vec_t *tile_vec, tile_t *tile)
+int push_tile_vec(TileVec *tile_vec, Tile *tile)
 {
 	if (tile_vec->used == tile_vec->size) {
 		tile_vec->size *= 2;
-		tile_vec->vec = (tile_t**)realloc(tile_vec->vec,
-										  tile_vec->size*sizeof(tile_t*));
+		tile_vec->vec = (Tile**)realloc(tile_vec->vec,
+		                                tile_vec->size*sizeof(Tile*));
 		if (!tile_vec->vec)
 			return 1;
 	}
@@ -47,7 +47,7 @@ int push_tile_vec(tile_vec_t *tile_vec, tile_t *tile)
 	return 0;
 }
 
-void free_tile_vec(tile_vec_t *tile_vec)
+void free_tile_vec(TileVec *tile_vec)
 {
 	for (int i = 0; i < tile_vec->used; i++)
 		free(tile_vec->vec[i]);

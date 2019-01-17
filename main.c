@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 #include <SDL2/SDL.h>
 
@@ -7,12 +8,11 @@
 #include "updating.h"
 #include "rendering.h"
 
-#define PIXELSIZE 5
+#define PIXELSIZE 4
 
 /*
 --- TODO ---
 * Deallocate the game structure, player structure etc...
-* Inventory
 * UI
 */
 
@@ -26,17 +26,22 @@ int main(int argc, char *argv[])
 	SDL_DisplayMode display_mode;
 	SDL_GetCurrentDisplayMode(0, &display_mode);
 	SDL_Window *window = SDL_CreateWindow("window", 
-										  SDL_WINDOWPOS_CENTERED, 
-										  SDL_WINDOWPOS_CENTERED,
-										  display_mode.w, display_mode.h,
-										  SDL_WINDOW_FULLSCREEN_DESKTOP);
+	                                      SDL_WINDOWPOS_CENTERED, 
+                                          SDL_WINDOWPOS_CENTERED,
+                                          display_mode.w, display_mode.h,
+                                          SDL_WINDOW_FULLSCREEN_DESKTOP);
 	if (window == NULL) {
 		fprintf(stderr, "Error creating window: %s\n", SDL_GetError());
 		return EXIT_FAILURE;
 	}
 
-	float scale = display_mode.w / 2560.0f;
-	int pixel_size = PIXELSIZE * scale;
+	float scale;
+	if ((float)display_mode.w / (float)display_mode.h < 1920.0f / 1080.0f)
+		scale = (float)display_mode.w / 1920.0f;
+	else
+		scale = (float)display_mode.h / 1080.0f;
+
+	int pixel_size = floor(PIXELSIZE * scale);
 	scale = (float)pixel_size / (float)PIXELSIZE;
 
 	const Uint32 flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
@@ -48,7 +53,7 @@ int main(int argc, char *argv[])
 
 	load_textures(renderer);
 
-	game_t *game = create_game(&display_mode, pixel_size, scale);
+	Game *game = create_game(&display_mode, pixel_size, scale);
 	if (!game) {
 		fprintf(stderr, "Error creating game\n");
 		return EXIT_FAILURE;
@@ -60,30 +65,25 @@ int main(int argc, char *argv[])
 	}
 	
 	for (int x = 0; x < 35; x++) {
-		if (push_tile_vec(&game->tiles, create_tile(grass, x * 16, 160, 16, 16)) != 0) {
+		if (push_tile_vec(&game->tiles, create_tile(grass, x * 16, 192, 16, 16)) != 0) {
 			fprintf(stderr, "Error pushing back tile to tile_vec\n");
 			return EXIT_FAILURE;
 		}
 
-		if (push_tile_vec(&game->tiles, create_tile(grassy_dirt, x * 16, 176, 16, 16)) != 0) {
+		if (push_tile_vec(&game->tiles, create_tile(grassy_dirt, x * 16, 208, 16, 16)) != 0) {
 			fprintf(stderr, "Error pushing back tile to tile_vec\n");
 			return EXIT_FAILURE;
 		}
 
-		if (push_tile_vec(&game->tiles, create_tile(dirt, x * 16, 192, 16, 16)) != 0) {
+		if (push_tile_vec(&game->tiles, create_tile(dirt, x * 16, 224, 16, 16)) != 0) {
 			fprintf(stderr, "Error pushing back tile to tile_vec\n");
 			return EXIT_FAILURE;
 		}
 
-		if (push_tile_vec(&game->tiles, create_tile(dirt, x * 16, 208, 16, 16)) != 0) {
+		if (push_tile_vec(&game->tiles, create_tile(dirt_bottom, x * 16, 240, 16, 16)) != 0) {
 			fprintf(stderr, "Error pushing back tile to tile_vec\n");
 			return EXIT_FAILURE;
 		}
-
-		// if (push_tile_vec(&game->tiles, create_tile(dirt, x * 16, 214, 16, 16)) != 0) {
-		// 	fprintf(stderr, "Error pushing back tile to tile_vec\n");
-		// 	return EXIT_FAILURE;
-		// }
 	}
 
 	Uint32 old_time = 0;
