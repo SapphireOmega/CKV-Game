@@ -27,9 +27,9 @@ int main(int argc, char *argv[])
 	SDL_GetCurrentDisplayMode(0, &display_mode);
 	SDL_Window *window = SDL_CreateWindow("window", 
 	                                      SDL_WINDOWPOS_CENTERED, 
-                                          SDL_WINDOWPOS_CENTERED,
-                                          display_mode.w, display_mode.h,
-                                          SDL_WINDOW_FULLSCREEN_DESKTOP);
+	                                      SDL_WINDOWPOS_CENTERED,
+	                                      display_mode.w, display_mode.h,
+	                                      SDL_WINDOW_FULLSCREEN_DESKTOP);
 	if (window == NULL) {
 		fprintf(stderr, "Error creating window: %s\n", SDL_GetError());
 		return EXIT_FAILURE;
