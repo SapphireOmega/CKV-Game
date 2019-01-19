@@ -80,7 +80,12 @@ int main(int argc, char *argv[])
 			return EXIT_FAILURE;
 		}
 
-		if (push_tile_vec(&game->tiles, create_tile(dirt_bottom, x * 16, 240, 16, 16)) != 0) {
+		if (push_tile_vec(&game->tiles, create_tile(dirt , x * 16, 240, 16, 16)) != 0) {
+			fprintf(stderr, "Error pushing back tile to tile_vec\n");
+			return EXIT_FAILURE;
+		}
+
+		if (push_tile_vec(&game->tiles, create_tile(dirt_bottom, x * 16, 256, 16, 16)) != 0) {
 			fprintf(stderr, "Error pushing back tile to tile_vec\n");
 			return EXIT_FAILURE;
 		}
