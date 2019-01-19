@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <string.h>
+
 #include "game.h"
 
 Game *create_game(SDL_DisplayMode *display_mode, int pixel_size, float scale)
@@ -20,4 +23,40 @@ Game *create_game(SDL_DisplayMode *display_mode, int pixel_size, float scale)
 	game->state = playing;
 
 	return game;
+}
+
+int load_level(const char *level_name, Game *game)
+{
+	empty_tile_vec(&game->tiles, 128);
+
+	FILE *file = fopen(level_name, "r");
+	char buff[256];
+	int y = 0;
+
+	while (fgets(buff, sizeof(buff), file)) {
+		buff[strcspn(buff, "\n")] = '\0';
+		for (int x = 0; x < strlen(buff); x++) {
+			switch (buff[x]) {
+			case '0':
+				break;
+			case '1':
+				push_tile_vec(&game->tiles, create_tile(grassy_dirt, x * 16, y * 16, 16, 16));
+				push_tile_vec(&game->tiles, create_tile(grass, x * 16, (y - 1) * 16, 16, 16));
+				break;
+			case '2':
+				push_tile_vec(&game->tiles, create_tile(dirt, x * 16, y * 16, 16, 16));
+				break;
+			case '3':
+				push_tile_vec(&game->tiles, create_tile(dirt_bottom, x * 16, y * 16, 16, 16));
+				break;
+			default:
+				fprintf(stderr, "Undefined tiletype %c in level %s\n", buff[x], level_name);
+				return EXIT_FAILURE;
+				break;
+			}
+		}
+		y++;
+	}
+
+	return fclose(file);
 }

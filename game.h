@@ -27,5 +27,6 @@ typedef struct {
 } Game;
 
 Game *create_game(SDL_DisplayMode *display_mode, int pixel_size, float scale);
+int load_level(const char *file_name, Game* game);
 
 #endif // GAME_H_

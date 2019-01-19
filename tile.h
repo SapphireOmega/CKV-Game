@@ -28,5 +28,6 @@ int init_tile_vec(TileVec *tile_vec, size_t init_size);
 int push_tile_vec(TileVec *tile_vec, Tile *tile);
 //int pop_tile_vec(tile_vec *tile_vec);
 void free_tile_vec(TileVec *tile_vec);
+void empty_tile_vec(TileVec *tile_vec, size_t init_size);
 
 #endif // TILE_H_

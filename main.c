@@ -59,38 +59,21 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	if (init_tile_vec(&game->tiles, 16) != 0) {
+	if (init_tile_vec(&game->tiles, 64) != 0) {
 		fprintf(stderr, "Error initializing tile_vec\n");
 		return EXIT_FAILURE;
 	}
-	
-	for (int x = 0; x < 35; x++) {
-		if (push_tile_vec(&game->tiles, create_tile(grass, x * 16, 192, 16, 16)) != 0) {
-			fprintf(stderr, "Error pushing back tile to tile_vec\n");
-			return EXIT_FAILURE;
-		}
 
-		if (push_tile_vec(&game->tiles, create_tile(grassy_dirt, x * 16, 208, 16, 16)) != 0) {
-			fprintf(stderr, "Error pushing back tile to tile_vec\n");
-			return EXIT_FAILURE;
-		}
-
-		if (push_tile_vec(&game->tiles, create_tile(dirt, x * 16, 224, 16, 16)) != 0) {
-			fprintf(stderr, "Error pushing back tile to tile_vec\n");
-			return EXIT_FAILURE;
-		}
-
-		if (push_tile_vec(&game->tiles, create_tile(dirt , x * 16, 240, 16, 16)) != 0) {
-			fprintf(stderr, "Error pushing back tile to tile_vec\n");
-			return EXIT_FAILURE;
-		}
-
-		if (push_tile_vec(&game->tiles, create_tile(dirt_bottom, x * 16, 256, 16, 16)) != 0) {
-			fprintf(stderr, "Error pushing back tile to tile_vec\n");
-			return EXIT_FAILURE;
-		}
+	if (push_tile_vec(&game->tiles, create_tile(dirt, 16, 16, 16, 16)) != 0) {
+		fprintf(stderr, "Error creating tile\n");
+		return EXIT_FAILURE;
 	}
 
+	if (load_level("levels/first.lvl", game) != 0) {
+		fprintf(stderr, "Error loading level\n");
+		return EXIT_FAILURE;
+	}
+	
 	Uint32 old_time = 0;
 	Uint32 new_time = 0;
 	float dt = 0.0;
