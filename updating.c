@@ -121,6 +121,9 @@ void update_playing_state(Game *game, float dt)
 					game->player->vel_x += SPEED;
 				}
 				break;
+			case SDLK_z:
+				game->player->state = attack;
+				break;
 			}
 			break;
 		case SDL_KEYUP:
@@ -132,6 +135,9 @@ void update_playing_state(Game *game, float dt)
 			case SDLK_RIGHT:
 				game->player->right = 0;
 				game->player->vel_x -= SPEED;
+				break;
+			case SDLK_z:
+				game->player->state = neutral;
 				break;
 			}
 		}

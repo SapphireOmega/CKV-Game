@@ -44,95 +44,93 @@ void render_player(SDL_Renderer *renderer, const GameWindow *game_window, const 
 void render_tiles(SDL_Renderer *renderer, const GameWindow *game_window, const Camera *camera, const TileVec *tiles, int pixel_size)
 {
 	for (int i = 0; i < tiles->used; i++) {
-		if (tiles->vec[i]->rect.x + tiles->vec[i]->rect.w > camera->x &&
-			tiles->vec[i]->rect.x < camera->x + camera->w &&
-			tiles->vec[i]->rect.y + tiles->vec[i]->rect.h > camera->y &&
-			tiles->vec[i]->rect.y < camera->y + camera->h)
+		if (tiles->vec[i]->rect.x + tiles->vec[i]->rect.w < camera->x &&
+			tiles->vec[i]->rect.x > camera->x + camera->w)
 		{
-			SDL_Rect src;
-			src.w = tiles->vec[i]->rect.w;
-			src.h = tiles->vec[i]->rect.h;
-			SDL_Rect dst;
-			dst.x = tiles->vec[i]->rect.x * pixel_size + game_window->x - camera->x * pixel_size;
-			dst.y = tiles->vec[i]->rect.y * pixel_size + game_window->y - camera->y * pixel_size;
-			dst.w = tiles->vec[i]->rect.w * pixel_size;
-			dst.h = tiles->vec[i]->rect.h * pixel_size;
-			switch (tiles->vec[i]->type) {
-			case grass:
-				src.x = 0;
-				src.y = 0;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
-				break;
-			case grassy_dirt:
-				src.x = 16;
-				src.y = 16;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
-				break;
-			case dirt:
-				src.x = 16;
-				src.y = 32;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
-				break;
-			case dirt_bottom:
-				src.x = 16;
-				src.y = 48;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
-				break;
-			case grassy_dirt_corner_left:
-				src.x = 0;
-				src.y = 16;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
-				break;
-			case dirt_side_left:
-				src.x = 0;
-				src.y = 32;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
-				break;
-			case dirt_corner_left:
-				src.x = 0;
-				src.y = 48;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
-				break;
-			case grassy_dirt_inside_corner_left:
-				src.x = 80;
-				src.y = 16;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
-				break;
-			case grassy_dirt_corner_right:
-				src.x = 32;
-				src.y = 16;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
-				break;
-			case dirt_side_right:
-				src.x = 32;
-				src.y = 32;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
-				break;
-			case dirt_corner_right:
-				src.x = 32;
-				src.y = 48;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
-				break;
-			case grassy_dirt_inside_corner_right:
-				src.x = 64;
-				src.y = 16;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
-				break;
-			case grass_left:
-				src.x = 32;
-				src.y = 0;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
-				break;
-			case grass_right:
-				src.x = 16;
-				src.y = 0;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
-				break;
-			default:
-				SDL_SetRenderDrawColor(renderer, 255, 0, 200, 255);
-				SDL_RenderFillRect(renderer, &dst);
-				break;
-			}
+		SDL_Rect src;
+		src.w = tiles->vec[i]->rect.w;
+		src.h = tiles->vec[i]->rect.h;
+		SDL_Rect dst;
+		dst.x = tiles->vec[i]->rect.x * pixel_size + game_window->x - camera->x * pixel_size;
+		dst.y = tiles->vec[i]->rect.y * pixel_size + game_window->y - camera->y * pixel_size;
+		dst.w = tiles->vec[i]->rect.w * pixel_size;
+		dst.h = tiles->vec[i]->rect.h * pixel_size;
+		switch (tiles->vec[i]->type) {
+		case grass:
+			src.x = 0;
+			src.y = 0;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		case grassy_dirt:
+			src.x = 16;
+			src.y = 16;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		case dirt:
+			src.x = 16;
+			src.y = 32;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		case dirt_bottom:
+			src.x = 16;
+			src.y = 48;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		case grassy_dirt_corner_left:
+			src.x = 0;
+			src.y = 16;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		case dirt_side_left:
+			src.x = 0;
+			src.y = 32;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		case dirt_corner_left:
+			src.x = 0;
+			src.y = 48;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		case grassy_dirt_inside_corner_left:
+			src.x = 80;
+			src.y = 16;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		case grassy_dirt_corner_right:
+			src.x = 32;
+			src.y = 16;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		case dirt_side_right:
+			src.x = 32;
+			src.y = 32;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		case dirt_corner_right:
+			src.x = 32;
+			src.y = 48;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		case grassy_dirt_inside_corner_right:
+			src.x = 64;
+			src.y = 16;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		case grass_left:
+			src.x = 32;
+			src.y = 0;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		case grass_right:
+			src.x = 16;
+			src.y = 0;
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+			break;
+		default:
+			SDL_SetRenderDrawColor(renderer, 255, 0, 200, 255);
+			SDL_RenderFillRect(renderer, &dst);
+			break;
+		}
 		}
 	}
 }

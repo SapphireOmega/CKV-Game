@@ -19,6 +19,7 @@ Player *create_player(int x, int y, Camera* camera)
 	player->right = 0;
 	player->flip = 0;
 	player->camera = camera;
+	player->state = neutral;
 
 	return player;
 }

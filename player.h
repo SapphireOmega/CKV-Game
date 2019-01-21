@@ -5,6 +5,11 @@
 
 #include "camera.h"
 
+typedef enum {
+	neutral,
+	attack,
+} PlayerState;
+
 typedef struct {
 	SDL_Rect rect;
 	float pos_x;
@@ -16,6 +21,7 @@ typedef struct {
 	int right;
 	int flip;
 	Camera* camera;
+	PlayerState state;
 } Player;
 
 Player *create_player(int x, int y, Camera *camera);
