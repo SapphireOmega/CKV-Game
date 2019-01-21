@@ -3,8 +3,10 @@
 #define GRAV 2000
 #define SPEED 100
 #define JUMP 350
+#define CAMERA_MARGIN_X 160
+#define CAMERA_MARGIN_Y 63
 
-void update_player(Player *player, TileVec *tile_vec, float dt)
+void update_player(Player *player, TileVec *tile_vec, unsigned int level_width, float dt)
 {
 	player->vel_y += GRAV * dt;
 
@@ -30,6 +32,24 @@ void update_player(Player *player, TileVec *tile_vec, float dt)
 				player->rect.x = (int)player->pos_x;
 			}
 		}
+	}
+
+	if (player->rect.x + player->rect.w + CAMERA_MARGIN_X > player->camera->x + player->camera->w)
+		player->camera->x = player->rect.x + player->rect.w + CAMERA_MARGIN_X - player->camera->w;
+	else if (player->rect.x - CAMERA_MARGIN_X < player->camera->x)
+		player->camera->x = player->rect.x - CAMERA_MARGIN_X;
+
+	if (player->camera->x < 0)
+		player->camera->x = 0;
+	else if (player->camera->x + player->camera->w > level_width * 16)
+		player->camera->x = level_width * 16 - player->camera->w;
+
+	if (player->rect.x < 0) {
+		player->pos_x = 0.0f;
+		player->rect.x = (int)player->pos_x;
+	} else if (player->rect.x + player->rect.w > level_width * 16) {
+		player->pos_x = level_width * 16 - player->rect.w;
+		player->rect.x = (int)player->pos_x;
 	}
 
 	player->onground = 0;
@@ -58,6 +78,12 @@ void update_player(Player *player, TileVec *tile_vec, float dt)
 				player->rect.y = (int)player->pos_y;
 			}
 		}
+	}
+
+	if (player->rect.y + player->rect.h + CAMERA_MARGIN_Y > player->camera->y + player->camera->h) {
+		player->camera->y = player->rect.y + player->rect.h + CAMERA_MARGIN_Y - player->camera->h;
+	} else if (player->rect.y - CAMERA_MARGIN_Y < player->camera->y) {
+		player->camera->y = player->rect.y - CAMERA_MARGIN_Y;
 	}
 
 	if (player->left && !player->right && !player->flip)
@@ -110,7 +136,26 @@ void update_playing_state(Game *game, float dt)
 			}
 		}
 	}
-	update_player(game->player, &game->tiles,  dt);
+	update_player(game->player, &game->tiles, game->level_width, dt);
+}
+
+void update_start_state(Game *game, float dt)
+{
+	SDL_Event event;
+	while (SDL_PollEvent(&event)) {
+		switch(event.type) {
+		case SDL_QUIT:
+			game->state = quit;
+			break;
+		case SDL_KEYDOWN:
+			switch(event.key.keysym.sym) {
+			case SDLK_SPACE:
+				game->state = playing;
+				break;
+			}
+			break;
+		}
+	}
 }
 
 void update_game(Game *game, float dt)
@@ -118,6 +163,9 @@ void update_game(Game *game, float dt)
 	switch (game->state) {
 	case playing:
 		update_playing_state(game, dt);
+		break;
+	case start:
+		update_start_state(game, dt);
 		break;
 	}
 }

@@ -5,9 +5,19 @@
 
 typedef enum {
 	grass,
+	grass_left,
+	grass_right,
 	grassy_dirt,
 	dirt,
 	dirt_bottom,
+	grassy_dirt_corner_left,
+	grassy_dirt_corner_right,
+	dirt_side_left,
+	dirt_side_right,
+	dirt_corner_left,
+	dirt_corner_right,
+	grassy_dirt_inside_corner_left,
+	grassy_dirt_inside_corner_right,
 } TileType;
 
 typedef struct {

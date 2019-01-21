@@ -1,6 +1,6 @@
 #include "player.h"
 
-Player *create_player(int x, int y)
+Player *create_player(int x, int y, Camera* camera)
 {
 	Player *player = (Player*)malloc(sizeof(Player));
 	if (!player)
@@ -18,6 +18,7 @@ Player *create_player(int x, int y)
 	player->left = 0;
 	player->right = 0;
 	player->flip = 0;
+	player->camera = camera;
 
 	return player;
 }

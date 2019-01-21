@@ -12,7 +12,7 @@
 
 /*
 --- TODO ---
-* Deallocate the game structure, player structure etc...
+* Camera
 * UI
 */
 
