@@ -1,8 +1,8 @@
 #include "updating.h"
 
-#define GRAV 2000
-#define SPEED 100
-#define JUMP 350
+#define GRAV 1800 // 1800
+#define SPEED 120 // 120
+#define JUMP 400 // 400
 #define CAMERA_MARGIN_X 160
 #define CAMERA_MARGIN_Y 63
 

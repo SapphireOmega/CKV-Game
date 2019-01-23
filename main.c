@@ -3,6 +3,8 @@
 #include <math.h>
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "game.h"
 #include "updating.h"
@@ -12,7 +14,9 @@
 
 /*
 --- TODO ---
-* Camera
+* Clean the memory after execution
+* >	Cameras
+* > Tiles
 * UI
 */
 
@@ -20,6 +24,16 @@ int main(int argc, char *argv[])
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
 		fprintf(stderr, "Error initializing SDL: %s\n", SDL_GetError());
+		return EXIT_FAILURE;
+	}
+
+	if (!IMG_Init(IMG_INIT_PNG)) {
+		fprintf(stderr, "Error initializing SDL: %s\n", IMG_GetError());
+		return EXIT_FAILURE;
+	}
+
+	if (TTF_Init() != 0) {
+		fprintf(stderr, "Error initializing SDL_TTF: %s\n", TTF_GetError());
 		return EXIT_FAILURE;
 	}
 
@@ -51,13 +65,14 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	load_textures(renderer);
-
 	Game *game = create_game(&display_mode, pixel_size, scale);
 	if (!game) {
 		fprintf(stderr, "Error creating game\n");
 		return EXIT_FAILURE;
 	}
+
+	load_text(renderer, &game->window, game->pixel_size);
+	load_textures(renderer);
 
 	if (init_tile_vec(&game->tiles, 64) != 0) {
 		fprintf(stderr, "Error initializing tile_vec\n");
@@ -92,9 +107,12 @@ int main(int argc, char *argv[])
 	}
 
 	free_tile_vec(&game->tiles);
+	render_clean();
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
+	IMG_Quit();
+	TTF_Quit();
 
 	return EXIT_SUCCESS;
 }

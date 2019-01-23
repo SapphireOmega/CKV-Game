@@ -1,6 +1,18 @@
 #include "rendering.h"
 
-void load_textures(SDL_Renderer* renderer)
+void load_text(SDL_Renderer *renderer, const GameWindow *game_window, int pixel_size)
+{
+	font = TTF_OpenFont("fonts/pixelart/pixelart.ttf", 20);
+	SDL_Color start_text_color = {255, 255, 255, 255};
+	start_text_surface = TTF_RenderText_Solid(font, "press space to start", start_text_color);
+	start_text = SDL_CreateTextureFromSurface(renderer, start_text_surface);
+	SDL_FreeSurface(start_text_surface);
+	SDL_QueryTexture(start_text, NULL, NULL, &start_text_rect.w, &start_text_rect.h);
+	start_text_rect.x = game_window->x + game_window->w / 2 - start_text_rect.w / 2;
+	start_text_rect.y = game_window->y + game_window->h / 5 * 2 - start_text_rect.h / 2; 
+}
+
+void load_textures(SDL_Renderer *renderer)
 {
 	SDL_Surface *tile_sheet_surface = IMG_Load("assets/tilesheet.png");
 	tile_sheet = SDL_CreateTextureFromSurface(renderer, tile_sheet_surface);
@@ -61,78 +73,81 @@ void render_tiles(SDL_Renderer *renderer, const GameWindow *game_window, const C
 			case grass:
 				src.x = 0;
 				src.y = 0;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 				break;
 			case grassy_dirt:
 				src.x = 16;
 				src.y = 16;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 				break;
 			case dirt:
 				src.x = 16;
 				src.y = 32;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 				break;
 			case dirt_bottom:
 				src.x = 16;
 				src.y = 48;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 				break;
 			case grassy_dirt_corner_left:
 				src.x = 0;
 				src.y = 16;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 				break;
 			case dirt_side_left:
 				src.x = 0;
 				src.y = 32;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 				break;
 			case dirt_corner_left:
 				src.x = 0;
 				src.y = 48;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 				break;
 			case grassy_dirt_inside_corner_left:
 				src.x = 80;
 				src.y = 16;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 				break;
 			case grassy_dirt_corner_right:
 				src.x = 32;
 				src.y = 16;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 				break;
 			case dirt_side_right:
 				src.x = 32;
 				src.y = 32;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 				break;
 			case dirt_corner_right:
 				src.x = 32;
 				src.y = 48;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 				break;
 			case grassy_dirt_inside_corner_right:
 				src.x = 64;
 				src.y = 16;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 				break;
 			case grass_left:
 				src.x = 32;
 				src.y = 0;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 				break;
 			case grass_right:
 				src.x = 16;
 				src.y = 0;
-				SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
+				break;
+			case grass_block:
+				src.x = 48;
+				src.y = 64;
+				break;
+			case grass_block_center:
+				src.x = 16;
+				src.y = 64;
+				break;
+			case grass_block_left:
+				src.x = 0;
+				src.y = 64;
+				break;
+			case grass_block_right:
+				src.x = 32;
+				src.y = 64;
 				break;
 			default:
 				SDL_SetRenderDrawColor(renderer, 255, 0, 200, 255);
 				SDL_RenderFillRect(renderer, &dst);
-				break;
+				return;
 			}
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 		}
 	}
 }
@@ -167,13 +182,14 @@ void render_playing_state(SDL_Renderer *renderer, const Game *game)
 
 void render_start_state(SDL_Renderer *renderer, const Game *game)
 {
-	SDL_SetRenderDrawColor(renderer, 10, 10, 10, 255);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	SDL_Rect tmp;
 	tmp.x = game->window.x;
 	tmp.y = game->window.y;
 	tmp.w = game->window.w;
 	tmp.h = game->window.h;
 	SDL_RenderFillRect(renderer, &tmp);
+	SDL_RenderCopy(renderer, start_text, NULL, &start_text_rect);
 	render_bars(renderer, &game->window, game->display_mode);
 }
 
@@ -187,4 +203,10 @@ void render_game(SDL_Renderer *renderer, const Game *game)
 		render_start_state(renderer, game);
 		break;
 	}
+}
+
+void render_clean()
+{
+	SDL_DestroyTexture(tile_sheet);
+	SDL_DestroyTexture(start_text);
 }

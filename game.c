@@ -86,6 +86,22 @@ int load_level(const char *level_name, Game *game)
 				push_tile_vec(&game->tiles, create_tile(grassy_dirt_inside_corner_right, x * 16, y * 16, 16, 16));
 				push_tile_vec(&game->tiles, create_tile(grass_right, x * 16, (y - 1) * 16, 16, 16));
 				break;
+			case 'c':
+				push_tile_vec(&game->tiles, create_tile(grass_block, x * 16, y * 16, 16, 16));
+				push_tile_vec(&game->tiles, create_tile(grass, x * 16, (y - 1) * 16, 16, 16));
+				break;
+			case 'd':
+				push_tile_vec(&game->tiles, create_tile(grass_block_right, x * 16, y * 16, 16, 16));
+				push_tile_vec(&game->tiles, create_tile(grass, x * 16, (y - 1) * 16, 16, 16));
+				break;
+			case 'e':
+				push_tile_vec(&game->tiles, create_tile(grass_block_center, x * 16, y * 16, 16, 16));
+				push_tile_vec(&game->tiles, create_tile(grass, x * 16, (y - 1) * 16, 16, 16));
+				break;
+			case 'f':
+				push_tile_vec(&game->tiles, create_tile(grass_block_left, x * 16, y * 16, 16, 16));
+				push_tile_vec(&game->tiles, create_tile(grass, x * 16, (y - 1) * 16, 16, 16));
+				break;
 			default:
 				fprintf(stderr, "Undefined tiletype %c in level %s\n", buff[x], level_name);
 				return EXIT_FAILURE;
