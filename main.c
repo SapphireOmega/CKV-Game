@@ -15,7 +15,7 @@
 /*
 --- TODO ---
 * Clean the memory after execution
-* >	Cameras
+* > Cameras
 * > Tiles
 * UI
 */
@@ -76,11 +76,6 @@ int main(int argc, char *argv[])
 
 	if (init_tile_vec(&game->tiles, 64) != 0) {
 		fprintf(stderr, "Error initializing tile_vec\n");
-		return EXIT_FAILURE;
-	}
-
-	if (push_tile_vec(&game->tiles, create_tile(dirt, 16, 16, 16, 16)) != 0) {
-		fprintf(stderr, "Error creating tile\n");
 		return EXIT_FAILURE;
 	}
 
