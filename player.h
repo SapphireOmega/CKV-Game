@@ -22,8 +22,12 @@ typedef struct {
 	int flip;
 	Camera* camera;
 	PlayerState state;
+	Uint32 attack_start_tick;
+	unsigned int attack_frame;
 } Player;
 
 Player *create_player(int x, int y, Camera *camera);
+
+void destroy_player(Player *player);
 
 #endif // PLAYER_H_

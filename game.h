@@ -30,9 +30,12 @@ typedef struct {
 	GameState state;
 	Camera *current_camera;
 	unsigned int level_width;
+	unsigned int level_height;
 } Game;
 
 Game *create_game(SDL_DisplayMode *display_mode, int pixel_size, float scale);
-int load_level(const char *file_name, Game* game);
+int load_level(const char *file_name, Game *game);
+
+void destroy_game(Game *game);
 
 #endif // GAME_H_

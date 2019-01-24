@@ -20,6 +20,13 @@ Player *create_player(int x, int y, Camera* camera)
 	player->flip = 0;
 	player->camera = camera;
 	player->state = neutral;
+	player->attack_start_tick = 0;
 
 	return player;
+}
+
+void destroy_player(Player *player)
+{
+	destroy_camera(player->camera);
+	free(player);
 }

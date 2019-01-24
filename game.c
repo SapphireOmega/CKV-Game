@@ -38,10 +38,12 @@ int load_level(const char *level_name, Game *game)
 	char buff[256];
 	int y = 0;
 	unsigned int level_width = 0;
+	unsigned int level_height = 0;
 
 	while (fgets(buff, sizeof(buff), file)) {
 		buff[strcspn(buff, "\n")] = '\0';
 		unsigned int new_level_width = strlen(buff);
+		level_height++;
 		if (new_level_width > level_width) 
 			level_width = new_level_width;
 		for (int x = 0; x < strlen(buff); x++) {
@@ -112,5 +114,12 @@ int load_level(const char *level_name, Game *game)
 	}
 
 	game->level_width = level_width;
+	game->level_height = level_height;
 	return fclose(file);
+}
+
+void destroy_game(Game *game)
+{
+	destroy_player(game->player);
+	free(game);
 }

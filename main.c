@@ -39,11 +39,8 @@ int main(int argc, char *argv[])
 
 	SDL_DisplayMode display_mode;
 	SDL_GetCurrentDisplayMode(0, &display_mode);
-	SDL_Window *window = SDL_CreateWindow("window", 
-	                                      SDL_WINDOWPOS_CENTERED, 
-	                                      SDL_WINDOWPOS_CENTERED,
-	                                      display_mode.w, display_mode.h,
-	                                      SDL_WINDOW_FULLSCREEN_DESKTOP);
+	const Uint32 window_flags = SDL_WINDOW_FULLSCREEN_DESKTOP;
+	SDL_Window *window = SDL_CreateWindow("window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, display_mode.w, display_mode.h, window_flags);
 	if (window == NULL) {
 		fprintf(stderr, "Error creating window: %s\n", SDL_GetError());
 		return EXIT_FAILURE;
@@ -58,8 +55,8 @@ int main(int argc, char *argv[])
 	int pixel_size = floor(PIXELSIZE * scale);
 	scale = (float)pixel_size / (float)PIXELSIZE;
 
-	const Uint32 flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
-	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, flags);
+	const Uint32 render_flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
+	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, render_flags);
 	if (renderer == NULL) {
 		fprintf(stderr, "Error creating renderer: %s\n", SDL_GetError());
 		return EXIT_FAILURE;
@@ -103,6 +100,7 @@ int main(int argc, char *argv[])
 
 	free_tile_vec(&game->tiles);
 	render_clean();
+	destroy_game(game);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();

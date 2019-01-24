@@ -23,12 +23,25 @@ void render_player(SDL_Renderer *renderer, const GameWindow *game_window, const 
 {
 	SDL_Rect src;
 	src.y = 0;
+	int undefined = 0;
 
 	int w_growth;
 	switch (player->state) {
 	case attack:
-		w_growth = 6;
-		src.x = 65;
+		switch (player->attack_frame) {
+		case 0:
+			w_growth = 0;
+			src.x = 49;
+			break;
+		case 1:
+			src.x = 65;
+			w_growth = 4;
+			break;
+		case 2:
+			w_growth = 6;
+			src.x = 97;
+			break;
+		}
 		break;
 	default:
 		w_growth = 0;

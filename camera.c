@@ -12,3 +12,8 @@ Camera *create_camera(int x, int y, int w, int h)
 
 	return camera;
 }
+
+void destroy_camera(Camera *camera)
+{
+	free(camera);
+}
