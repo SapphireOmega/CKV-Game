@@ -1,4 +1,4 @@
-#include <stdlib.h>
+
 #include <stdio.h>
 #include <math.h>
 
@@ -14,13 +14,12 @@
 
 /*
 --- TODO ---
-* Clean the memory after execution
-* > Cameras
-* > Tiles
+* Enemies
 * UI
 */
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
 		fprintf(stderr, "Error initializing SDL: %s\n", SDL_GetError());
@@ -68,7 +67,7 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	load_text(renderer, &game->window, game->pixel_size);
+	load_text(renderer, &game->window);
 	load_textures(renderer);
 
 	if (init_tile_vec(&game->tiles, 64) != 0) {

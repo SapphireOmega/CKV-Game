@@ -1,6 +1,7 @@
 #include "player.h"
 
-Player *create_player(int x, int y, Camera* camera)
+Player *
+create_player(int x, int y, Camera* camera)
 {
 	Player *player = (Player*)malloc(sizeof(Player));
 	if (!player)
@@ -19,13 +20,14 @@ Player *create_player(int x, int y, Camera* camera)
 	player->right = 0;
 	player->flip = 0;
 	player->camera = camera;
-	player->state = neutral;
+	player->state = player_neutral;
 	player->attack_start_tick = 0;
 
 	return player;
 }
 
-void destroy_player(Player *player)
+void
+destroy_player(Player *player)
 {
 	destroy_camera(player->camera);
 	free(player);

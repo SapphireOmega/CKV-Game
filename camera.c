@@ -2,7 +2,8 @@
 
 #include <stdlib.h>
 
-Camera *create_camera(int x, int y, int w, int h)
+Camera *
+create_camera(int x, int y, int w, int h)
 {
 	Camera *camera = (Camera*)malloc(sizeof(Camera));
 	camera->x = x;
@@ -13,7 +14,8 @@ Camera *create_camera(int x, int y, int w, int h)
 	return camera;
 }
 
-void destroy_camera(Camera *camera)
+void
+destroy_camera(Camera *camera)
 {
 	free(camera);
 }

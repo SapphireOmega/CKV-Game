@@ -6,8 +6,8 @@
 #include "camera.h"
 
 typedef enum {
-	neutral,
-	attack,
+	player_neutral,
+	player_attack,
 } PlayerState;
 
 typedef struct {

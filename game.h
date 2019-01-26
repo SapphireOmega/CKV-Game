@@ -6,6 +6,7 @@
 #include "player.h"
 #include "tile.h"
 #include "camera.h"
+#include "enemy.h"
 
 typedef enum {
 	start,
@@ -18,12 +19,13 @@ typedef struct {
 	int y;
 	int w;
 	int h;
+	int pixel_size;
 } GameWindow;
 
 typedef struct {
 	Player *player;
 	TileVec tiles;
-	int pixel_size;
+	EnemyVec enemies;
 	float scale;
 	SDL_DisplayMode *display_mode;
 	GameWindow window;

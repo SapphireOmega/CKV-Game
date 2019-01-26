@@ -13,7 +13,7 @@ static SDL_Surface *start_text_surface;
 static SDL_Texture *start_text;
 static SDL_Rect start_text_rect;
 
-void load_text(SDL_Renderer *renderer, const GameWindow *game_window, int pixel_size);
+void load_text(SDL_Renderer *renderer, const GameWindow *game_window);
 void load_textures(SDL_Renderer *renderer);
 
 void render_game(SDL_Renderer *renderer, const Game *game);

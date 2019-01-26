@@ -6,11 +6,14 @@
 #define CAMERA_MARGIN_X 160
 #define CAMERA_MARGIN_Y 63
 
-void update_player(Player *player, TileVec *tile_vec, unsigned int level_width, unsigned int level_height, float dt)
+void
+update_player(Player *player, TileVec *tile_vec, unsigned int level_width, unsigned int level_height, float dt)
 {
 	player->vel_y += GRAV * dt;
 
-	player->pos_x += player->vel_x * dt;
+	if (player->state != player_attack)
+		player->pos_x += player->vel_x * dt;
+
 	player->rect.x = (int)player->pos_x;
 	for (int i = 0; i < tile_vec->used; i++) {
 		Tile tile = *tile_vec->vec[i];
@@ -97,12 +100,12 @@ void update_player(Player *player, TileVec *tile_vec, unsigned int level_width, 
 	if (player->camera->y + player->camera->h > level_height * 16 - 1)
 		player->camera->y = level_height * 16 - player->camera->h - 1;
 
-	if (player->left && !player->right && !player->flip)
+	if (player->left && !player->right && !player->flip && player->state == player_neutral)
 		player->flip = 1;
-	else if (player->right && !player->left && player->flip)
+	else if (player->right && !player->left && player->flip && player->state == player_neutral)
 		player->flip = 0;
 
-	if (player->state == attack) {
+	if (player->state == player_attack) {
 		Uint32 current_tick = SDL_GetTicks();
 		Uint32 delta_ticks = current_tick - player->attack_start_tick;
 		if (delta_ticks >= 0 && delta_ticks < 40)
@@ -114,11 +117,12 @@ void update_player(Player *player, TileVec *tile_vec, unsigned int level_width, 
 		else if (delta_ticks >= 240 && delta_ticks < 400)
 			player->attack_frame = 0;
 		else
-			player->state = neutral;
+			player->state = player_neutral;
 	}
 }
 
-void update_playing_state(Game *game, float dt)
+void
+update_playing_state(Game *game, float dt)
 {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
@@ -132,7 +136,7 @@ void update_playing_state(Game *game, float dt)
 				game->state = quit;
 				break;
 			case SDLK_UP:
-				if (game->player->onground)
+				if (game->player->onground && game->player->state != player_attack)
 					game->player->vel_y -= JUMP;
 				break;
 			case SDLK_LEFT:
@@ -148,8 +152,8 @@ void update_playing_state(Game *game, float dt)
 				}
 				break;
 			case SDLK_z:
-				if (game->player->state == neutral) {
-					game->player->state = attack;
+				if (game->player->state == player_neutral && game->player->vel_y == 0.0f) {
+					game->player->state = player_attack;
 					game->player->attack_start_tick = SDL_GetTicks();
 				}
 				break;
@@ -171,7 +175,8 @@ void update_playing_state(Game *game, float dt)
 	update_player(game->player, &game->tiles, game->level_width, game->level_height, dt);
 }
 
-void update_start_state(Game *game, float dt)
+void
+update_start_state(Game *game, float dt)
 {
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
@@ -190,7 +195,8 @@ void update_start_state(Game *game, float dt)
 	}
 }
 
-void update_game(Game *game, float dt)
+void
+update_game(Game *game, float dt)
 {
 	switch (game->state) {
 	case playing:
