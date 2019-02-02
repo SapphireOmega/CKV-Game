@@ -9,9 +9,13 @@
 
 static SDL_Texture *tile_sheet;
 static TTF_Font *font;
+static TTF_Font *death_font;
 static SDL_Surface *start_text_surface;
+static SDL_Surface *death_text_surface;
 static SDL_Texture *start_text;
+static SDL_Texture *death_text;
 static SDL_Rect start_text_rect;
+static SDL_Rect death_text_rect;
 
 void load_text(SDL_Renderer *renderer, const GameWindow *game_window);
 void load_textures(SDL_Renderer *renderer);

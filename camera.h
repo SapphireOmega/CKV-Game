@@ -9,6 +9,5 @@ typedef struct {
 } Camera;
 
 Camera *create_camera(int x, int y, int w, int h);
-void destroy_camera(Camera *camera);
 
 #endif // CAMERA_H_

@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <math.h>
 
@@ -15,6 +14,17 @@
 /*
 --- TODO ---
 * Enemies
+* > better AI
+* > sort out combat and movement
+* > more types of enemies
+* > demonitization fireballs
+* Levels
+* > Indian levels
+* > tiles
+* Sound
+* > music
+* > sound effects
+* If possible make a generic vector type
 * UI
 */
 
@@ -61,6 +71,11 @@ main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
+	if (SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND) != 0) {
+		fprintf(stderr, "Error setting blendmode: %s\n", SDL_GetError());
+		return EXIT_FAILURE;
+	}
+
 	Game *game = create_game(&display_mode, pixel_size, scale);
 	if (!game) {
 		fprintf(stderr, "Error creating game\n");
@@ -75,11 +90,25 @@ main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
+	if (init_enemy_vec(&game->enemies, 32) != 0) {
+		fprintf(stderr, "Error initializing enemy_vec\n");
+		return EXIT_FAILURE;
+	}
+
 	if (load_level("levels/first.lvl", game) != 0) {
 		fprintf(stderr, "Error loading level\n");
 		return EXIT_FAILURE;
 	}
-	
+
+	Enemy *enemy = create_enemy(160, 240, dark_magician);
+	push_enemy_vec(&game->enemies, enemy);
+	Enemy *enemy2 = create_enemy(192, 240, dark_magician);
+	push_enemy_vec(&game->enemies, enemy2);
+	//Enemy *enemy3 = create_enemy(160, 240, dark_magician);
+	//push_enemy_vec(&game->enemies, enemy3);
+	//Enemy *enemy4 = create_enemy(160, 240, dark_magician);
+	//push_enemy_vec(&game->enemies, enemy4);
+
 	Uint32 old_time = 0;
 	Uint32 new_time = 0;
 	float dt = 0.0;

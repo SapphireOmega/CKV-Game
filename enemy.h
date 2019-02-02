@@ -1,6 +1,8 @@
 #ifndef ENEMY_H_
 #define ENEMY_H_
 
+#include "entity.h"
+
 #include <SDL2/SDL.h>
 
 typedef enum {
@@ -13,13 +15,7 @@ typedef enum {
 } EnemyType;
 
 typedef struct {
-	SDL_Rect rect;
-	float pos_x;
-	float pos_y;
-	float vel_x;
-	float vel_y;
-	int flip;
-	int on_ground;
+	Entity *entity;
 	EnemyState state;
 	EnemyType type;
 } Enemy;
@@ -34,7 +30,6 @@ typedef struct {
 
 int init_enemy_vec(EnemyVec *enemy_vec, size_t init_size);
 int push_enemy_vec(EnemyVec *enemy_vec, Enemy *enemy);
-int pop_enemy_vec(EnemyVec *enemy_vec);
 void empty_enemy_vec(EnemyVec *enemy_vec, size_t init_size);
 void free_enemy_vec(EnemyVec *enemy_vec);
 

@@ -1,16 +1,26 @@
 #include "rendering.h"
 
+#define DEATH_FADE_STEP 2
+
 void
 load_text(SDL_Renderer *renderer, const GameWindow *game_window)
 {
 	font = TTF_OpenFont("fonts/pixelart/pixelart.ttf", 20);
+	death_font = TTF_OpenFont("fonts/pixelart/pixelart.ttf", 40);
 	SDL_Color start_text_color = {255, 255, 255, 255};
+	SDL_Color death_text_color = {200, 0, 0, 255};
 	start_text_surface = TTF_RenderText_Solid(font, "press space to start", start_text_color);
+	death_text_surface = TTF_RenderText_Solid(death_font, "you died", death_text_color);
 	start_text = SDL_CreateTextureFromSurface(renderer, start_text_surface);
+	death_text = SDL_CreateTextureFromSurface(renderer, death_text_surface);
 	SDL_FreeSurface(start_text_surface);
+	SDL_FreeSurface(death_text_surface);
 	SDL_QueryTexture(start_text, NULL, NULL, &start_text_rect.w, &start_text_rect.h);
+	SDL_QueryTexture(death_text, NULL, NULL, &death_text_rect.w, &death_text_rect.h);
 	start_text_rect.x = game_window->x + game_window->w / 2 - start_text_rect.w / 2;
 	start_text_rect.y = game_window->y + game_window->h / 5 * 2 - start_text_rect.h / 2; 
+	death_text_rect.x = game_window->x + game_window->w / 2 - death_text_rect.w / 2;
+	death_text_rect.y = game_window->y + game_window->h / 5 * 2 - death_text_rect.h / 2; 
 }
 
 void
@@ -59,12 +69,12 @@ render_player(SDL_Renderer *renderer, const GameWindow *game_window, const Camer
 		break;
 	}
 
-	src.w = player->rect.w + w_growth;
-	src.h = player->rect.h;
+	src.w = player->entity->rect.w + w_growth;
+	src.h = player->entity->rect.h;
 
 	SDL_Rect dst;
-	dst.x = player->rect.x * pixel_size + game_window->x - camera->x * pixel_size;
-	dst.y = player->rect.y * pixel_size + game_window->y - camera->y * pixel_size;
+	dst.x = player->entity->rect.x * pixel_size + game_window->x - camera->x * pixel_size;
+	dst.y = player->entity->rect.y * pixel_size + game_window->y - camera->y * pixel_size;
 	dst.w = src.w * pixel_size;
 	dst.h = src.h * pixel_size;
 
@@ -160,34 +170,48 @@ render_tiles(SDL_Renderer *renderer, const GameWindow *game_window, const Camera
 }
 
 void
-render_enemy(SDL_Renderer *renderer, const GameWindow *game_window, const Camera* camera, const Enemy *enemy)
+render_enemies(SDL_Renderer *renderer, const GameWindow *game_window, const Camera* camera, const EnemyVec *enemies)
 {
 	int pixel_size = game_window->pixel_size;
 
-	SDL_Rect src;
-	src.x = 96;
-	src.y = 32;
-	src.w = enemy->rect.w;
-	src.h = enemy->rect.h;
+	for (int i = 0; i < enemies->used; i++) {
+		if (enemies->vec[i]->entity->alive &&
+			enemies->vec[i]->entity->rect.x + enemies->vec[i]->entity->rect.w > camera->x &&
+			enemies->vec[i]->entity->rect.x < camera->x + camera->w &&
+			enemies->vec[i]->entity->rect.y + enemies->vec[i]->entity->rect.h > camera->y &&
+			enemies->vec[i]->entity->rect.y < camera->y + camera->h)
+		{
+			SDL_Rect src;
+			src.x = 96;
+			src.y = 32;
+			src.w = enemies->vec[i]->entity->rect.w;
+			src.h = enemies->vec[i]->entity->rect.h;
 
-	switch (enemy->type) {
-	case dark_magician:
-		switch (enemy->state) {
-		case enemy_neutral:
-			src.x = 98;
-			src.y = 16;
-			break;
+			switch (enemies->vec[i]->type) {
+			case dark_magician:
+				switch (enemies->vec[i]->state) {
+				case enemy_neutral:
+					if (enemies->vec[i]->entity->flip) {
+						src.x = 98;
+						src.y = 64;
+					} else {
+						src.x = 98;
+						src.y = 48;
+					}
+					break;
+				}
+				break;
+			}
+
+			SDL_Rect dst;
+			dst.x = enemies->vec[i]->entity->rect.x * pixel_size + game_window->x - camera->x * pixel_size;
+			dst.y = enemies->vec[i]->entity->rect.y * pixel_size + game_window->y - camera->y * pixel_size;
+			dst.w = src.w * pixel_size;
+			dst.h = src.h * pixel_size;
+
+			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 		}
-		break;
 	}
-
-	SDL_Rect dst;
-	dst.x = enemy->rect.x * pixel_size + game_window->x - camera->x * pixel_size;
-	dst.y = enemy->rect.y * pixel_size + game_window->y - camera->y * pixel_size;
-	dst.w = src.w * pixel_size;
-	dst.h = src.h * pixel_size;
-
-	SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 }
 
 void
@@ -214,9 +238,13 @@ void
 render_playing_state(SDL_Renderer *renderer, const Game *game)
 {
 	render_player(renderer, &game->window, game->current_camera, game->player);
+
+	if (game->enemies.vec != NULL)
+		render_enemies(renderer, &game->window, game->current_camera, &game->enemies);
+
 	if (game->tiles.vec != NULL)
 		render_tiles(renderer, &game->window, game->current_camera, &game->tiles);
-	
+
 	render_bars(renderer, &game->window, game->display_mode);
 }
 
@@ -235,6 +263,24 @@ render_start_state(SDL_Renderer *renderer, const Game *game)
 }
 
 void
+render_death_state(SDL_Renderer *renderer, const Game *game)
+{
+	render_playing_state(renderer, game);
+	int a = DEATH_FADE_STEP * game->player->death_timer;
+	if (a >= 255)
+		a = 255;
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, a);
+	SDL_Rect tmp;
+	tmp.x = game->window.x;
+	tmp.y = game->window.y;
+	tmp.w = game->window.w;
+	tmp.h = game->window.h;
+	SDL_RenderFillRect(renderer, &tmp);
+	SDL_SetTextureAlphaMod(death_text, a);
+	SDL_RenderCopy(renderer, death_text, NULL, &death_text_rect);
+}
+
+void
 render_game(SDL_Renderer *renderer, const Game *game)
 {
 	switch (game->state) {
@@ -243,6 +289,9 @@ render_game(SDL_Renderer *renderer, const Game *game)
 		break;
 	case start:
 		render_start_state(renderer, game);
+		break;
+	case death:
+		render_death_state(renderer, game);
 		break;
 	}
 }

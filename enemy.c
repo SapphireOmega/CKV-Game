@@ -1,5 +1,7 @@
 #include "enemy.h"
 
+#define SPEED 80
+
 Enemy *
 create_enemy(int x, int y, EnemyType type)
 {
@@ -7,17 +9,11 @@ create_enemy(int x, int y, EnemyType type)
 	if (!enemy)
 		return NULL;
 
-	enemy->rect.x = x;
-	enemy->rect.y = y;
-	enemy->rect.w = 12;
-	enemy->rect.h = 16;
-	enemy->pos_x = x;
-	enemy->pos_y = y;
-	enemy->vel_x = 0.0f;
-	enemy->vel_y = 0.0f;
-	enemy->on_ground = 0;
-	enemy->flip = 0;
+	enemy->entity = create_entity(x, y, 12, 16);
+	enemy->entity->vel_x = SPEED;
+	enemy->entity->spawn_vel_x = SPEED;
 	enemy->state = enemy_neutral;
+	enemy->type = type;
 
 	return enemy;
 }
@@ -36,19 +32,13 @@ init_enemy_vec(EnemyVec *enemy_vec, size_t init_size)
 int
 push_enemy_vec(EnemyVec *enemy_vec, Enemy *enemy)
 {
-	if (enemy_vec->used ==enemy_vec->size) {
+	if (enemy_vec->used == enemy_vec->size) {
 		enemy_vec->size *= 2;
 		enemy_vec->vec = (Enemy**)realloc(enemy_vec->vec,enemy_vec->size*sizeof(Enemy*));
 		if (!enemy_vec->vec)
 			return 1;
 	}
 	enemy_vec->vec[enemy_vec->used++] = enemy;
-	return 0;
-}
-
-int
-pop_enemy_vec(EnemyVec *enemy_vec)
-{
 	return 0;
 }
 

@@ -11,6 +11,7 @@
 typedef enum {
 	start,
 	playing,
+	death,
 	quit,
 } GameState;
 
