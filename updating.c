@@ -138,12 +138,14 @@ update_player(Player *player, TileVec *tiles, unsigned int level_width, unsigned
 	else
 		player->entity->move = 1;
 
-	if (player->left && !player->right)
+	if (player->left && !player->right && !player->entity->knock_back)
 		player->entity->vel_x = -SPEED;
-	else if (!player->left && player->right)
+	else if (!player->left && player->right && !player->entity->knock_back)
 		player->entity->vel_x = SPEED;
-	else
+	else if (!player->entity->knock_back)
 		player->entity->vel_x = 0;
+	else if (player->entity->knock_back && player->entity->vel_y == 0)
+		player->entity->knock_back = 0;
 
 	update_entity_x(player->entity, tiles, level_width, dt);
 	update_player_camera_x(player, level_width, level_height);
@@ -255,7 +257,12 @@ update_enemies(EnemyVec *enemies, TileVec *tiles, Player *player, unsigned int l
 			enemy->entity->rect.y + player->entity->rect.h > player->entity->rect.y)
 		{
 			player->entity->hp -= 1;
-			//player->entity->knock_back = 1;
+			player->entity->knock_back = 1;
+			if (enemy->entity->flip)
+				player->entity->vel_x = -KNOCK_BACK_SPEED;
+			else
+				player->entity->vel_x = KNOCK_BACK_SPEED;
+			player->entity->vel_y = -KNOCK_BACK_JUMP;
 			enemy->hit_player= 1;
 		} else if (enemy->hit_player &&
 			(enemy->entity->rect.x > player->entity->rect.x + player->entity->rect.w ||
@@ -287,16 +294,10 @@ update_playing_state(Game *game, float dt)
 					game->player->entity->vel_y -= JUMP;
 				break;
 			case SDLK_LEFT:
-				//if (!game->player->left) {
 					game->player->left = 1;
-					//game->player->entity->vel_x -= SPEED;
-				//}
 				break;
 			case SDLK_RIGHT:
-				//if (!game->player->right) {
 					game->player->right = 1;
-					//game->player->entity->vel_x += SPEED;
-				//}
 				break;
 			case SDLK_z:
 				if (game->player->state == player_neutral && game->player->entity->vel_y == 0.0f) {
@@ -309,16 +310,10 @@ update_playing_state(Game *game, float dt)
 		case SDL_KEYUP:
 			switch (event.key.keysym.sym) {
 			case SDLK_LEFT:
-				//if (game->player->left) {
 					game->player->left = 0;
-					//game->player->entity->vel_x += SPEED;
-				//}
 				break;
 			case SDLK_RIGHT:
-				//if (game->player->right) {
 					game->player->right = 0;
-					//game->player->entity->vel_x -= SPEED;
-				//}
 				break;
 			}
 		}
