@@ -7,19 +7,12 @@
 #define CAMERA_MARGIN_Y 63
 #define DEATH_TIME 300
 #define PLAYER_ATTACK_RANGE 6
-
-void
-respawn_entity(Entity *entity)
-{
-	entity->alive = 1;
-	entity->pos_x = entity->spawn_x;
-	entity->pos_y = entity->spawn_y;
-	entity->vel_x = entity->spawn_vel_x;
-	entity->vel_y = entity->spawn_vel_y;
-	entity->rect.x = entity->pos_x;
-	entity->rect.y = entity->pos_y;
-	entity->flip = entity->spawn_flip;
-}
+#define ENEMY_JUMP_RANGE 48
+#define ENEMY_ATTACK_RANGE 192
+#define ENEMY_SPEED 80
+#define ENEMY_JUMP 300
+#define KNOCK_BACK_SPEED 250
+#define KNOCK_BACK_JUMP 300
 
 int
 update_entity_x(Entity *entity, TileVec *tiles, unsigned int level_width, float dt)
@@ -137,7 +130,6 @@ update_player_camera_y(Player *player, unsigned int level_width, unsigned int le
 		player->camera->y = level_height * 16 - player->camera->h - 1;
 }
 
-
 void
 update_player(Player *player, TileVec *tiles, unsigned int level_width, unsigned int level_height, GameState *game_state, float dt)
 {
@@ -145,6 +137,13 @@ update_player(Player *player, TileVec *tiles, unsigned int level_width, unsigned
 		player->entity->move = 0;
 	else
 		player->entity->move = 1;
+
+	if (player->left && !player->right)
+		player->entity->vel_x = -SPEED;
+	else if (!player->left && player->right)
+		player->entity->vel_x = SPEED;
+	else
+		player->entity->vel_x = 0;
 
 	update_entity_x(player->entity, tiles, level_width, dt);
 	update_player_camera_x(player, level_width, level_height);
@@ -169,45 +168,102 @@ update_player(Player *player, TileVec *tiles, unsigned int level_width, unsigned
 		else if (delta_ticks >= 220 && delta_ticks < 400) {
 			player->attack_frame = 0;
 			player->attack = 0;
-		} else
+		} else {
 			player->state = player_neutral;
+		}
 	}
+
+	if (player->entity->hp <= 0)
+		player->entity->alive = 0;
 
 	if (!player->entity->alive)
 		*game_state = death;
 }
 
 void
-update_enemies(EnemyVec *enemies, TileVec *tiles, const Player *player, unsigned int level_width, unsigned int level_height, float dt)
+update_enemies(EnemyVec *enemies, TileVec *tiles, Player *player, unsigned int level_width, unsigned int level_height, float dt)
 {
 	for (int e = 0; e < enemies->used; e++) {
 		Enemy *enemy = enemies->vec[e];
+	
+		int x = enemy->entity->rect.x + enemy->entity->rect.w / 2 - player->entity->rect.x - player->entity->rect.w / 2;
+		if (x <= ENEMY_ATTACK_RANGE && x > 0 && !enemy->entity->knock_back) {
+			enemy->entity->vel_x = -ENEMY_SPEED;
+			enemy->entity->flip = 1;
+		} else if (x >= -ENEMY_ATTACK_RANGE && x < 0 && !enemy->entity->knock_back) {
+			enemy->entity->vel_x = ENEMY_SPEED;
+			enemy->entity->flip = 0;
+		}
 
 		if (enemy->state == enemy_attack)
 			enemy->entity->move = 0;
 		else
 			enemy->entity->move = 1;
 
-		if (update_entity_x(enemy->entity, tiles, level_width, dt)) {
-			enemy->entity->flip = !enemy->entity->flip;
-			enemy->entity->vel_x *= -1;
+		if (update_entity_x(enemy->entity, tiles, level_width, dt) && enemy->entity->on_ground) {
+			enemy->entity->vel_y = -ENEMY_JUMP;
+			enemy->entity->knock_back = 0;
 		}
 
 		update_entity_y(enemy->entity, tiles, level_height, dt);
 
 		if (player->attack) {
 			if (player->flip &&
+				!enemy->hit &&
 				enemy->entity->rect.x + enemy->entity->rect.w > player->entity->rect.x - PLAYER_ATTACK_RANGE &&
 				enemy->entity->rect.x < player->entity->rect.x)
 			{
-				enemy->entity->alive = 0;
-			}
-			else if (!player->flip &&
+				enemy->entity->hp -= 1;
+				enemy->entity->knock_back = 1;
+				enemy->entity->vel_y = -KNOCK_BACK_JUMP;
+				enemy->entity->vel_x = -KNOCK_BACK_SPEED;
+				enemy->hit = 1;
+			} else if (!player->flip &&
+				!enemy->hit &&
 				enemy->entity->rect.x < player->entity->rect.x + player->entity->rect.w + PLAYER_ATTACK_RANGE &&
 				enemy->entity->rect.x > player->entity->rect.x)
 			{
-				enemy->entity->alive = 0;
+				enemy->entity->hp -= 1;
+				enemy->entity->knock_back = 1;
+				enemy->entity->vel_y = -KNOCK_BACK_JUMP;
+				enemy->entity->vel_x = KNOCK_BACK_SPEED;
+				enemy->hit = 1;
+			} else if (player->flip &&
+				enemy->hit &&
+				enemy->entity->rect.x + enemy->entity->rect.w < player->entity->rect.x - PLAYER_ATTACK_RANGE)
+			{
+				enemy->hit = 0;
+			} else if (!player->flip &&
+				enemy->hit &&
+				enemy->entity->rect.x > player->entity->rect.x + player->entity->rect.w + PLAYER_ATTACK_RANGE)
+			{
+				enemy->hit = 0;
 			}
+		}
+
+		if (enemy->entity->knock_back && enemy->entity->vel_y == 0)
+			enemy->entity->knock_back = 0;
+
+		if (enemy->entity->hp <= 0)
+			enemy->entity->alive = 0;
+
+		if (enemy->entity->alive &&
+			!enemy->hit_player &&
+			enemy->entity->rect.x < player->entity->rect.x + player->entity->rect.w &&
+			enemy->entity->rect.x + enemy->entity->rect.w > player->entity->rect.x &&
+			enemy->entity->rect.y < player->entity->rect.y + player->entity->rect.h &&
+			enemy->entity->rect.y + player->entity->rect.h > player->entity->rect.y)
+		{
+			player->entity->hp -= 1;
+			//player->entity->knock_back = 1;
+			enemy->hit_player= 1;
+		} else if (enemy->hit_player &&
+			(enemy->entity->rect.x > player->entity->rect.x + player->entity->rect.w ||
+			 enemy->entity->rect.x + enemy->entity->rect.w < player->entity->rect.x ||
+			 enemy->entity->rect.y > player->entity->rect.y + player->entity->rect.h ||
+			 enemy->entity->rect.y + player->entity->rect.h < player->entity->rect.y))
+		{
+			enemy->hit_player = 0;
 		}
 	}
 }
@@ -231,16 +287,16 @@ update_playing_state(Game *game, float dt)
 					game->player->entity->vel_y -= JUMP;
 				break;
 			case SDLK_LEFT:
-				if (!game->player->left) {
+				//if (!game->player->left) {
 					game->player->left = 1;
-					game->player->entity->vel_x -= SPEED;
-				}
+					//game->player->entity->vel_x -= SPEED;
+				//}
 				break;
 			case SDLK_RIGHT:
-				if (!game->player->right) {
+				//if (!game->player->right) {
 					game->player->right = 1;
-					game->player->entity->vel_x += SPEED;
-				}
+					//game->player->entity->vel_x += SPEED;
+				//}
 				break;
 			case SDLK_z:
 				if (game->player->state == player_neutral && game->player->entity->vel_y == 0.0f) {
@@ -253,16 +309,16 @@ update_playing_state(Game *game, float dt)
 		case SDL_KEYUP:
 			switch (event.key.keysym.sym) {
 			case SDLK_LEFT:
-				if (game->player->left) {
+				//if (game->player->left) {
 					game->player->left = 0;
-					game->player->entity->vel_x += SPEED;
-				}
+					//game->player->entity->vel_x += SPEED;
+				//}
 				break;
 			case SDLK_RIGHT:
-				if (game->player->right) {
+				//if (game->player->right) {
 					game->player->right = 0;
-					game->player->entity->vel_x -= SPEED;
-				}
+					//game->player->entity->vel_x -= SPEED;
+				//}
 				break;
 			}
 		}

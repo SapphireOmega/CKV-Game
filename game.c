@@ -106,6 +106,9 @@ load_level(const char *level_name, Game *game)
 				push_tile_vec(&game->tiles, create_tile(grass_block_left, x * 16, y * 16, 16, 16));
 				push_tile_vec(&game->tiles, create_tile(grass, x * 16, (y - 1) * 16, 16, 16));
 				break;
+			case 'g':
+				push_enemy_vec(&game->enemies, create_enemy(x * 16, y * 16, dark_magician));
+				break;
 			default:
 				fprintf(stderr, "Undefined tiletype %c in level %s\n", buff[x], level_name);
 				return EXIT_FAILURE;

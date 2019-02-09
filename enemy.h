@@ -18,6 +18,8 @@ typedef struct {
 	Entity *entity;
 	EnemyState state;
 	EnemyType type;
+	int hit_player;
+	int hit;
 } Enemy;
 
 Enemy *create_enemy(int x, int y, EnemyType type);

@@ -13,6 +13,8 @@
 
 /*
 --- TODO ---
+* Movement
+* > fix bugs
 * Enemies
 * > better AI
 * > sort out combat and movement
@@ -21,11 +23,19 @@
 * Levels
 * > Indian levels
 * > tiles
+* > traps
 * Sound
 * > music
 * > sound effects
-* If possible make a generic vector type
 * UI
+* > home menu
+* > escape menu
+* > text clouds
+* Cinematics
+* > Cinematic camera's
+* Camera
+* > Maybe softer camera motion
+* If possible make a generic vector type
 */
 
 int
@@ -99,15 +109,6 @@ main(int argc, char *argv[])
 		fprintf(stderr, "Error loading level\n");
 		return EXIT_FAILURE;
 	}
-
-	Enemy *enemy = create_enemy(160, 240, dark_magician);
-	push_enemy_vec(&game->enemies, enemy);
-	Enemy *enemy2 = create_enemy(192, 240, dark_magician);
-	push_enemy_vec(&game->enemies, enemy2);
-	//Enemy *enemy3 = create_enemy(160, 240, dark_magician);
-	//push_enemy_vec(&game->enemies, enemy3);
-	//Enemy *enemy4 = create_enemy(160, 240, dark_magician);
-	//push_enemy_vec(&game->enemies, enemy4);
 
 	Uint32 old_time = 0;
 	Uint32 new_time = 0;

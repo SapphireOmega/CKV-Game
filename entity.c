@@ -1,7 +1,7 @@
 #include "entity.h"
 
 Entity *
-create_entity(int x, int y, int w, int h)
+create_entity(int x, int y, int w, int h, int hp)
 {
 	Entity *entity = (Entity*)malloc(sizeof(Entity));
 
@@ -22,6 +22,24 @@ create_entity(int x, int y, int w, int h)
 	entity->spawn_flip = 0;
 	entity->alive = 1;
 	entity->move = 1;
+	entity->hp = hp;
+	entity->knock_back = 0;
+	entity->knock_back_timer = 0.0f;
+	entity->spawn_hp = hp;
 
 	return entity;
+}
+
+void
+respawn_entity(Entity *entity)
+{
+	entity->alive = 1;
+	entity->pos_x = entity->spawn_x;
+	entity->pos_y = entity->spawn_y;
+	entity->vel_x = entity->spawn_vel_x;
+	entity->vel_y = entity->spawn_vel_y;
+	entity->rect.x = entity->pos_x;
+	entity->rect.y = entity->pos_y;
+	entity->flip = entity->spawn_flip;
+	entity->hp = entity->spawn_hp;
 }

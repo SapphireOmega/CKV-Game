@@ -1,7 +1,5 @@
 #include "enemy.h"
 
-#define SPEED 80
-
 Enemy *
 create_enemy(int x, int y, EnemyType type)
 {
@@ -9,11 +7,13 @@ create_enemy(int x, int y, EnemyType type)
 	if (!enemy)
 		return NULL;
 
-	enemy->entity = create_entity(x, y, 12, 16);
-	enemy->entity->vel_x = SPEED;
-	enemy->entity->spawn_vel_x = SPEED;
+	enemy->entity = create_entity(x, y, 12, 16, 3);
+	enemy->entity->vel_x = 0;
+	enemy->entity->spawn_vel_x = 0;
 	enemy->state = enemy_neutral;
 	enemy->type = type;
+	enemy->hit_player = 0;
+	enemy->hit = 0;
 
 	return enemy;
 }

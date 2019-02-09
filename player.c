@@ -7,7 +7,7 @@ create_player(int x, int y, Camera* camera)
 	if (!player)
 		return NULL;
 
-	player->entity = create_entity(x, y, 15, 16);
+	player->entity = create_entity(x, y, 15, 16, 3);
 	player->left = 0;
 	player->right = 0;
 	player->flip = 0;
