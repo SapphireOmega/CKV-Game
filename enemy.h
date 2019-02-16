@@ -6,18 +6,14 @@
 #include <SDL2/SDL.h>
 
 typedef enum {
-	enemy_neutral,
-	enemy_attack,
-} EnemyState;
-
-typedef enum {
 	dark_magician,
 } EnemyType;
 
 typedef struct {
 	Entity *entity;
-	EnemyState state;
 	EnemyType type;
+	int melee_cooldown;
+	int melee_start_tick;
 	int hit_player;
 	int hit;
 } Enemy;

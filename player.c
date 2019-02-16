@@ -13,7 +13,6 @@ create_player(int x, int y, Camera* camera)
 	player->flip = 0;
 	player->attack = 0;
 	player->camera = camera;
-	player->state = player_neutral;
 	player->attack_start_tick = 0;
 
 	return player;

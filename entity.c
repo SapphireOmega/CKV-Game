@@ -5,6 +5,7 @@ create_entity(int x, int y, int w, int h, int hp)
 {
 	Entity *entity = (Entity*)malloc(sizeof(Entity));
 
+	entity->state = neutral;
 	entity->spawn_x = x;
 	entity->spawn_y = y;
 	entity->pos_x = x;
@@ -23,8 +24,6 @@ create_entity(int x, int y, int w, int h, int hp)
 	entity->alive = 1;
 	entity->move = 1;
 	entity->hp = hp;
-	entity->knock_back = 0;
-	entity->knock_back_timer = 0.0f;
 	entity->spawn_hp = hp;
 
 	return entity;

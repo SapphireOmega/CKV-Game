@@ -6,21 +6,15 @@
 #include "entity.h"
 #include "camera.h"
 
-typedef enum {
-	player_neutral,
-	player_attack,
-} PlayerState;
-
 typedef struct {
 	Entity *entity;
+	Camera *camera;
 	int left;
 	int right;
 	int flip;
 	int attack;
-	Camera *camera;
-	PlayerState state;
-	Uint32 attack_start_tick;
 	unsigned int attack_frame;
+	Uint32 attack_start_tick;
 	float death_timer;
 } Player;
 

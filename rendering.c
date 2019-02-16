@@ -1,5 +1,7 @@
 #include "rendering.h"
 
+#include <stdio.h>
+
 #define DEATH_FADE_STEP 2
 
 void
@@ -42,8 +44,8 @@ render_player(SDL_Renderer *renderer, const GameWindow *game_window, const Camer
 	src.x = 96;
 	src.y = 32;
 
-	switch (player->state) {
-	case player_attack:
+	switch (player->entity->state) {
+	case attack:
 		switch (player->attack_frame) {
 		case 0:
 			src.x = 49;
@@ -62,7 +64,7 @@ render_player(SDL_Renderer *renderer, const GameWindow *game_window, const Camer
 			break;
 		}
 		break;
-	case player_neutral:
+	default:
 		src.x = 49;
 		src.y = 0;
 		w_growth = 0;
@@ -189,8 +191,8 @@ render_enemies(SDL_Renderer *renderer, const GameWindow *game_window, const Came
 
 			switch (enemies->vec[i]->type) {
 			case dark_magician:
-				switch (enemies->vec[i]->state) {
-				case enemy_neutral:
+				switch (enemies->vec[i]->entity->state) {
+				default:
 					if (enemies->vec[i]->entity->flip) {
 						src.x = 98;
 						src.y = 64;
@@ -266,6 +268,7 @@ void
 render_death_state(SDL_Renderer *renderer, const Game *game)
 {
 	render_playing_state(renderer, game);
+	printf("!");
 	int a = DEATH_FADE_STEP * game->player->death_timer;
 	if (a >= 255)
 		a = 255;

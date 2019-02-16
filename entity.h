@@ -3,8 +3,16 @@
 
 #include <SDL2/SDL.h>
 
+typedef enum {
+	neutral,
+	attack,
+	melee,
+	knock_back,
+} EntityState;
+
 typedef struct {
 	SDL_Rect rect;
+	EntityState state;
 	float pos_x;
 	float pos_y;
 	float vel_x;
@@ -14,8 +22,6 @@ typedef struct {
 	int alive;
 	int move;
 	int hp;
-	int knock_back;
-	float knock_back_timer;
 	int spawn_hp;
 	float spawn_x;
 	float spawn_y;

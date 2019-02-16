@@ -10,8 +10,9 @@ create_enemy(int x, int y, EnemyType type)
 	enemy->entity = create_entity(x, y, 12, 16, 3);
 	enemy->entity->vel_x = 0;
 	enemy->entity->spawn_vel_x = 0;
-	enemy->state = enemy_neutral;
 	enemy->type = type;
+	enemy->melee_cooldown = 0;
+	enemy->melee_start_tick = 0;
 	enemy->hit_player = 0;
 	enemy->hit = 0;
 
