@@ -22,6 +22,10 @@ typedef enum {
 	dirt_corner_right,
 	grassy_dirt_inside_corner_left,
 	grassy_dirt_inside_corner_right,
+	level_sign,
+	jump_left,
+	jump_right,
+	block_enemy,
 } TileType;
 
 typedef struct {

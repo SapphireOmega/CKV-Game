@@ -9,18 +9,20 @@
 #define CAMERA_MARGIN_Y 63
 #define DEATH_TIME 300
 #define PLAYER_ATTACK_RANGE 6
-#define ENEMY_JUMP_RANGE 48 // 64
-#define ENEMY_ATTACK_RANGE 208
+#define ENEMY_JUMP_RANGE 64 // 48
+#define ENEMY_ATTACK_RANGE 256 // 208
 #define ENEMY_SPEED 80
 #define ENEMY_JUMP 300
-#define ENEMY_ATTACK_JUMP 300
-#define ENEMY_ATTACK_SPEED 150
-#define ENEMY_MELEE_COOLDOWN 1000
-#define KNOCK_BACK_SPEED 150 // 250
+#define ENEMY_JUMP_X 150
+#define ENEMY_JUMP_Y 300
+#define ENEMY_ATTACK_JUMP 300// 300
+#define ENEMY_ATTACK_SPEED 150 // 150
+#define ENEMY_MELEE_COOLDOWN 1500
+#define KNOCK_BACK_SPEED 200 // 150
 #define KNOCK_BACK_JUMP 300 // 300
 
 int
-update_entity_x(Entity *entity, TileVec *tiles, unsigned int level_width, float dt)
+update_entity_x(Entity *entity, TileVec *tiles, TileVec *bg_tiles, TileVec *inv_tiles, Uint32 level_width, float dt)
 {
 	int collided = 0;
 
@@ -64,7 +66,7 @@ update_entity_x(Entity *entity, TileVec *tiles, unsigned int level_width, float 
 }
 
 int
-update_entity_y(Entity *entity, TileVec *tiles, unsigned int level_height, float dt)
+update_entity_y(Entity *entity, TileVec *tiles, TileVec *bg_tiles, TileVec *inv_tiles, Uint32 level_height, float dt)
 {
 	int collided = 0;
 
@@ -85,7 +87,7 @@ update_entity_y(Entity *entity, TileVec *tiles, unsigned int level_height, float
 				entity->pos_y = tile.rect.y - entity->rect.h;
 				entity->rect.y = entity->pos_y;
 				entity->on_ground = 1;
-				if (entity->state == knock_back || entity->state == melee) {
+				if (entity->state == knock_back || entity->state == melee || entity->state == jump) {
 					entity->state = neutral;
 					entity->vel_x = 0;
 				}
@@ -112,7 +114,7 @@ update_entity_y(Entity *entity, TileVec *tiles, unsigned int level_height, float
 }
 
 void
-update_player_camera_x(Player *player, unsigned int level_width, unsigned int level_height)
+update_player_camera_x(Player *player, Uint32 level_width, Uint32 level_height)
 {
 	if (player->entity->rect.x + player->entity->rect.w + CAMERA_MARGIN_X > player->camera->x + player->camera->w)
 		player->camera->x = player->entity->rect.x + player->entity->rect.w + CAMERA_MARGIN_X - player->camera->w;
@@ -126,7 +128,7 @@ update_player_camera_x(Player *player, unsigned int level_width, unsigned int le
 }
 
 void
-update_player_camera_y(Player *player, unsigned int level_width, unsigned int level_height)
+update_player_camera_y(Player *player, Uint32 level_width, Uint32 level_height)
 {
 	if (player->entity->rect.y + player->entity->rect.h + CAMERA_MARGIN_Y > player->camera->y + player->camera->h) {
 		player->camera->y = player->entity->rect.y + player->entity->rect.h + CAMERA_MARGIN_Y - player->camera->h;
@@ -139,7 +141,7 @@ update_player_camera_y(Player *player, unsigned int level_width, unsigned int le
 }
 
 void
-update_player(Player *player, TileVec *tiles, unsigned int level_width, unsigned int level_height, GameState *game_state, float dt)
+update_player(Player *player, TileVec *tiles, TileVec *bg_tiles, TileVec *inv_tiles, Uint32 level_width, Uint32 level_height, GameState *game_state, float dt)
 {
 	if (player->entity->state == attack) {
 		if (!player->entity->on_ground)
@@ -158,9 +160,9 @@ update_player(Player *player, TileVec *tiles, unsigned int level_width, unsigned
 	else if (player->entity->move)
 		player->entity->vel_x = 0;
 
-	update_entity_x(player->entity, tiles, level_width, dt);
+	update_entity_x(player->entity, tiles, bg_tiles, inv_tiles, level_width, dt);
 	update_player_camera_x(player, level_width, level_height);
-	update_entity_y(player->entity, tiles, level_height, dt);
+	update_entity_y(player->entity, tiles, bg_tiles, inv_tiles, level_height, dt);
 	update_player_camera_y(player, level_width, level_height);
 
 	if (player->left && !player->right && !player->flip && player->entity->state == neutral)
@@ -194,14 +196,14 @@ update_player(Player *player, TileVec *tiles, unsigned int level_width, unsigned
 }
 
 void
-update_enemies(EnemyVec *enemies, TileVec *tiles, Player *player, unsigned int level_width, unsigned int level_height, float dt)
+update_enemies(EnemyVec *enemies, TileVec *tiles, TileVec *bg_tiles, TileVec *inv_tiles, Player *player, Uint32 level_width, Uint32 level_height, float dt)
 {
 	for (int e = 0; e < enemies->used; e++) {
 		Enemy *enemy = enemies->vec[e];
 	
 		if (enemy->entity->state == neutral) {
 			enemy->entity->move = 1;
-		} else if (enemy->entity->state == melee || enemy->entity->state == knock_back) {
+		} else if (enemy->entity->state == melee || enemy->entity->state == knock_back || enemy->entity->state == jump) {
 			enemy->entity->move = 0;
 		}
 		
@@ -227,8 +229,8 @@ update_enemies(EnemyVec *enemies, TileVec *tiles, Player *player, unsigned int l
 				enemy->entity->vel_x = -ENEMY_SPEED;
 				enemy->entity->flip = 1;
 			} else {
-				enemy->entity->vel_x = ENEMY_SPEED;
-				enemy->entity->flip = 0;
+				enemy->entity->vel_x = -ENEMY_SPEED;
+				enemy->entity->flip = 1;
 			}
 		} else if (x >= -ENEMY_ATTACK_RANGE && x < 0 && enemy->entity->state == neutral) {
 			if (x >= -ENEMY_JUMP_RANGE && enemy->entity->on_ground && !enemy->melee_cooldown) {
@@ -242,21 +244,62 @@ update_enemies(EnemyVec *enemies, TileVec *tiles, Player *player, unsigned int l
 				enemy->entity->vel_x = ENEMY_SPEED;
 				enemy->entity->flip = 0;
 			} else {
-				enemy->entity->vel_x = -ENEMY_SPEED;
-				enemy->entity->flip = 1;
+				enemy->entity->vel_x = ENEMY_SPEED;
+				enemy->entity->flip = 0;
 			}
 		} else if (enemy->entity->state == neutral) {
 			enemy->entity->vel_x = 0;
 		}
+	
+		for (int i = 0; i < inv_tiles->used; i++) {
+			Tile *tile = inv_tiles->vec[i];
+			if (tile->type == jump_right &&
+				enemy->entity->vel_x > 0 &&
+				enemy->entity->on_ground &&
+				enemy->entity->state == neutral &&
+				enemy->entity->rect.x < tile->rect.x + tile->rect.w &&
+				enemy->entity->rect.x > tile->rect.x &&
+				enemy->entity->rect.y < tile->rect.y + tile->rect.h &&
+				enemy->entity->rect.y + enemy->entity->rect.h > tile->rect.y)
+			{
+				enemy->entity->vel_x = ENEMY_JUMP_X;
+				enemy->entity->vel_y = -ENEMY_JUMP_Y;
+				enemy->entity->state = jump;
+			} else if (tile->type == jump_left &&
+				enemy->entity->vel_x < 0 &&
+				enemy->entity->on_ground &&
+				enemy->entity->state == neutral &&
+				enemy->entity->rect.x + enemy->entity->rect.w < tile->rect.x + tile->rect.w &&
+				enemy->entity->rect.x + enemy->entity->rect.w > tile->rect.x &&
+				enemy->entity->rect.y < tile->rect.y + tile->rect.h &&
+				enemy->entity->rect.y + enemy->entity->rect.h > tile->rect.y)
+			{
+				enemy->entity->vel_x = -ENEMY_JUMP_X;
+				enemy->entity->vel_y = -ENEMY_JUMP_Y;
+				enemy->entity->state = jump;
+			} else if (tile->type == block_enemy && enemy->entity->state == neutral) {
+				if (enemy->entity->vel_x > 0 &&
+					enemy->entity->rect.x + enemy->entity->rect.w > tile->rect.x &&
+					enemy->entity->rect.x < tile->rect.x)
+				{
+					enemy->entity->vel_x = 0;
+				} else if (enemy->entity->vel_x < 0 &&
+					enemy->entity->rect.x < tile->rect.x + tile->rect.w &&
+					enemy->entity->rect.x + enemy->entity->rect.w > tile->rect.x + tile->rect.w)
+				{
+					enemy->entity->vel_x = 0;
+				}
+			}
+		}
 
-		if (update_entity_x(enemy->entity, tiles, level_width, dt)) {
+		if (update_entity_x(enemy->entity, tiles, bg_tiles, inv_tiles, level_width, dt)) {
 			if (enemy->entity->state == knock_back)
 				enemy->entity->state = neutral;
 			if (enemy->entity->on_ground)
 				enemy->entity->vel_y = -ENEMY_JUMP;
 		}
 
-		update_entity_y(enemy->entity, tiles, level_height, dt);
+		update_entity_y(enemy->entity, tiles, bg_tiles, inv_tiles, level_height, dt);
 
 		if (player->flip &&
 			player->attack &&
@@ -297,7 +340,7 @@ update_enemies(EnemyVec *enemies, TileVec *tiles, Player *player, unsigned int l
 
 		if (enemy->entity->alive &&
 			!enemy->hit_player &&
-			enemy->entity->state == melee &&
+			//enemy->entity->state == melee &&
 			enemy->entity->rect.x < player->entity->rect.x + player->entity->rect.w &&
 			enemy->entity->rect.x + enemy->entity->rect.w > player->entity->rect.x &&
 			enemy->entity->rect.y < player->entity->rect.y + player->entity->rect.h &&
@@ -305,14 +348,24 @@ update_enemies(EnemyVec *enemies, TileVec *tiles, Player *player, unsigned int l
 		{
 			player->entity->hp -= 1;
 			player->entity->state = knock_back;
-			if (enemy->entity->flip)
+			if (enemy->entity->flip) {
 				player->entity->vel_x = -KNOCK_BACK_SPEED;
-			else
+				if (enemy->entity->state == melee)
+					enemy->entity->vel_x = KNOCK_BACK_SPEED;
+			} else {
 				player->entity->vel_x = KNOCK_BACK_SPEED;
+				if (enemy->entity->state == melee)
+					enemy->entity->vel_x = -KNOCK_BACK_SPEED;
+			}
 			player->entity->vel_y = -KNOCK_BACK_JUMP;
-			enemy->entity->state = neutral;
+			if (enemy->entity->state == melee)
+				enemy->entity->vel_y = -KNOCK_BACK_JUMP;
 			enemy->hit_player= 1;
-			enemy->entity->vel_x *= -1;
+			//enemy->entity->state = neutral;
+			//enemy->entity->vel_x *= -1;
+			//enemy->entity->vel_y *= -1;
+			if (enemy->entity->state == melee)
+				enemy->entity->state = knock_back;
 		} else if (enemy->hit_player &&
 			(enemy->entity->rect.x > player->entity->rect.x + player->entity->rect.w ||
 			 enemy->entity->rect.x + enemy->entity->rect.w < player->entity->rect.x ||
@@ -369,8 +422,8 @@ update_playing_state(Game *game, float dt)
 		}
 	}
 
-	update_enemies(&game->enemies, &game->tiles, game->player, game->level_width, game->level_height, dt);
-	update_player(game->player, &game->tiles, game->level_width, game->level_height, &game->state, dt);
+	update_enemies(&game->enemies, &game->tiles, &game->bg_tiles, &game->inv_tiles, game->player, game->level_width, game->level_height, dt);
+	update_player(game->player, &game->tiles, &game->bg_tiles, &game->inv_tiles, game->level_width, game->level_height, &game->state, dt);
 }
 
 void

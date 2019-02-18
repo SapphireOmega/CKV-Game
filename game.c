@@ -109,9 +109,20 @@ load_level(const char *level_name, Game *game)
 			case 'g':
 				push_enemy_vec(&game->enemies, create_enemy(x * 16, y * 16, dark_magician));
 				break;
+			case 'h':
+				push_tile_vec(&game->bg_tiles, create_tile(level_sign, x * 16, y * 16, 16, 16));
+				break;
+			case 'i':
+				push_tile_vec(&game->inv_tiles, create_tile(jump_right, x * 16, y * 16, 16, 16));
+				break;
+			case 'j':
+				push_tile_vec(&game->inv_tiles, create_tile(jump_left, x * 16, y * 16, 16, 16));
+				break;
+			case 'k':
+				push_tile_vec(&game->inv_tiles, create_tile(block_enemy, x * 16, y * 16, 16, 16));
+				break;
 			default:
 				fprintf(stderr, "Undefined tiletype %c in level %s\n", buff[x], level_name);
-				return EXIT_FAILURE;
 				break;
 			}
 		}

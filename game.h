@@ -26,6 +26,8 @@ typedef struct {
 typedef struct {
 	Player *player;
 	TileVec tiles;
+	TileVec bg_tiles;
+	TileVec inv_tiles;
 	EnemyVec enemies;
 	float scale;
 	SDL_DisplayMode *display_mode;

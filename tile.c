@@ -16,6 +16,7 @@ create_tile(TileType t, int x, int y, int w, int h)
 	tile->type = t;
 
 	switch (t) {
+	case level_sign:
 	case grass:
 		tile->collidable = 0;
 		break;

@@ -1,7 +1,5 @@
 #include "rendering.h"
 
-#include <stdio.h>
-
 #define DEATH_FADE_STEP 2
 
 void
@@ -239,6 +237,9 @@ render_bars(SDL_Renderer *renderer, const GameWindow *game_window, SDL_DisplayMo
 void
 render_playing_state(SDL_Renderer *renderer, const Game *game)
 {
+	if (game->bg_tiles.vec != NULL)
+		render_tiles(renderer, &game->window, game->current_camera, &game->bg_tiles);
+
 	render_player(renderer, &game->window, game->current_camera, game->player);
 
 	if (game->enemies.vec != NULL)
@@ -268,7 +269,6 @@ void
 render_death_state(SDL_Renderer *renderer, const Game *game)
 {
 	render_playing_state(renderer, game);
-	printf("!");
 	int a = DEATH_FADE_STEP * game->player->death_timer;
 	if (a >= 255)
 		a = 255;

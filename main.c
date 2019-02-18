@@ -13,16 +13,15 @@
 
 /*
 --- TODO ---
-* Movement
-* > fix bugs
+* Combat and Movement
+* > paralize an entity if it gets hit
+* > death animation
 * Enemies
-* > better AI
-* > sort out combat and movement
 * > more types of enemies
 * > demonitization fireballs
 * Levels
 * > Indian levels
-* > tiles
+* > more tiles
 * > traps
 * Sound
 * > music
@@ -31,10 +30,9 @@
 * > home menu
 * > escape menu
 * > text clouds
-* Cinematics
-* > Cinematic camera's
 * Camera
 * > Maybe softer camera motion
+* > Cinematic camera's
 * If possible make a generic vector type
 */
 
@@ -100,6 +98,16 @@ main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
+	if (init_tile_vec(&game->bg_tiles, 16) != 0) {
+		fprintf(stderr, "Error initializing tile_vec\n");
+		return EXIT_FAILURE;
+	}
+
+	if (init_tile_vec(&game->inv_tiles, 16) != 0) {
+		fprintf(stderr, "Error initializing tile_vec\n");
+		return EXIT_FAILURE;
+	}
+
 	if (init_enemy_vec(&game->enemies, 32) != 0) {
 		fprintf(stderr, "Error initializing enemy_vec\n");
 		return EXIT_FAILURE;
@@ -121,7 +129,7 @@ main(int argc, char *argv[])
 
 		update_game(game, dt);
 
-		SDL_SetRenderDrawColor(renderer, 99, 155, 255, 255);
+		SDL_SetRenderDrawColor(renderer, 100, 155, 255, 255);
 		SDL_RenderClear(renderer);
 		render_game(renderer, game);
 		SDL_RenderPresent(renderer);
