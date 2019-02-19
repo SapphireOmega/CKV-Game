@@ -15,6 +15,7 @@ create_player(int x, int y, Camera* camera)
 	player->camera = camera;
 	player->attack_start_tick = 0;
 	player->death_timer = 0.0f;
+	player->next_level = 0;
 
 	return player;
 }

@@ -18,6 +18,7 @@ create_game(SDL_DisplayMode *display_mode, int pixel_size, float scale)
 	game->window.y = (display_mode->h - game->window.h) / 2;
 	game->window.pixel_size = pixel_size;
 	game->state = start;
+	game->level = 0;
 
 	int cam_w = game->window.w / pixel_size;
 	int cam_h = game->window.h / pixel_size;
@@ -34,8 +35,13 @@ create_game(SDL_DisplayMode *display_mode, int pixel_size, float scale)
 int
 load_level(const char *level_name, Game *game)
 {
+	respawn_entity(game->player->entity);
 	empty_tile_vec(&game->tiles, 128);
+	empty_tile_vec(&game->bg_tiles, 128);
+	empty_tile_vec(&game->inv_tiles, 128);
+	empty_enemy_vec(&game->enemies, 32);
 
+	printf("%s\n", level_name);
 	FILE *file = fopen(level_name, "r");
 	char buff[256];
 	int y = 0;
@@ -132,6 +138,17 @@ load_level(const char *level_name, Game *game)
 	game->level_width = level_width;
 	game->level_height = level_height;
 	return fclose(file);
+}
+
+int
+next_level(Game *game)
+{
+	if (++game->level > 1)
+		game->level = 0;
+
+	printf("%i\n", game->level);
+
+	return load_level(levels[game->level], game);
 }
 
 void

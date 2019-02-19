@@ -8,6 +8,11 @@
 #include "camera.h"
 #include "enemy.h"
 
+const static char *levels[2] = {
+	"levels/first.lvl",
+	"levels/level2.lvl",
+};
+
 typedef enum {
 	start,
 	playing,
@@ -34,12 +39,14 @@ typedef struct {
 	GameWindow window;
 	GameState state;
 	Camera *current_camera;
-	unsigned int level_width;
-	unsigned int level_height;
+	Uint32 level;
+	Uint32 level_width;
+	Uint32 level_height;
 } Game;
 
 Game *create_game(SDL_DisplayMode *display_mode, int pixel_size, float scale);
 int load_level(const char *file_name, Game *game);
+int next_level(Game *game);
 
 void destroy_game(Game *game);
 

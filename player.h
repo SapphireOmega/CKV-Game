@@ -16,6 +16,7 @@ typedef struct {
 	unsigned int attack_frame;
 	Uint32 attack_start_tick;
 	float death_timer;
+	int next_level;
 } Player;
 
 Player *create_player(int x, int y, Camera *camera);

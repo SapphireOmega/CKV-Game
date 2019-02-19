@@ -163,6 +163,9 @@ render_tiles(SDL_Renderer *renderer, const GameWindow *game_window, const Camera
 			case grass_block_right:
 				src.x = 32; src.y = 64;
 				break;
+			case level_sign:
+				src.x = 96; src.y = 16;
+				break;
 			}
 			SDL_RenderCopy(renderer, tile_sheet, &src, &dst);
 		}

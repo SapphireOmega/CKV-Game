@@ -9,15 +9,17 @@
 #define CAMERA_MARGIN_Y 63
 #define DEATH_TIME 300
 #define PLAYER_ATTACK_RANGE 6
-#define ENEMY_JUMP_RANGE 64 // 48
-#define ENEMY_ATTACK_RANGE 256 // 208
+#define ENEMY_JUMP_RANGE_X 52 // 48
+#define ENEMY_JUMP_RANGE_Y 64 // 48
+#define ENEMY_ATTACK_RANGE_X 208 // 208 256
+#define ENEMY_ATTACK_RANGE_Y 80 // 208 256
 #define ENEMY_SPEED 80
 #define ENEMY_JUMP 300
 #define ENEMY_JUMP_X 150
 #define ENEMY_JUMP_Y 300
 #define ENEMY_ATTACK_JUMP 300// 300
 #define ENEMY_ATTACK_SPEED 150 // 150
-#define ENEMY_MELEE_COOLDOWN 1500
+#define ENEMY_MELEE_COOLDOWN 3000 // 1500
 #define KNOCK_BACK_SPEED 200 // 150
 #define KNOCK_BACK_JUMP 300 // 300
 
@@ -97,7 +99,7 @@ update_entity_y(Entity *entity, TileVec *tiles, TileVec *bg_tiles, TileVec *inv_
 				entity->rect.x < tile.rect.x + tile.rect.w &&
 				entity->rect.y + entity->rect.h > tile.rect.y + tile.rect.h)
 			{
-				entity->vel_y = 0.0f;
+				entity->vel_y = 1.0f;
 				entity->pos_y = tile.rect.y + tile.rect.h;
 				entity->rect.y = entity->pos_y;
 				collided = 1;
@@ -130,11 +132,10 @@ update_player_camera_x(Player *player, Uint32 level_width, Uint32 level_height)
 void
 update_player_camera_y(Player *player, Uint32 level_width, Uint32 level_height)
 {
-	if (player->entity->rect.y + player->entity->rect.h + CAMERA_MARGIN_Y > player->camera->y + player->camera->h) {
+	if (player->entity->rect.y + player->entity->rect.h + CAMERA_MARGIN_Y > player->camera->y + player->camera->h)
 		player->camera->y = player->entity->rect.y + player->entity->rect.h + CAMERA_MARGIN_Y - player->camera->h;
-	} else if (player->entity->rect.y - CAMERA_MARGIN_Y < player->camera->y) {
+	else if (player->entity->rect.y - CAMERA_MARGIN_Y < player->camera->y)
 		player->camera->y = player->entity->rect.y - CAMERA_MARGIN_Y;
-	}
 
 	if (player->camera->y + player->camera->h > level_height * 16 - 1)
 		player->camera->y = level_height * 16 - player->camera->h - 1;
@@ -143,15 +144,26 @@ update_player_camera_y(Player *player, Uint32 level_width, Uint32 level_height)
 void
 update_player(Player *player, TileVec *tiles, TileVec *bg_tiles, TileVec *inv_tiles, Uint32 level_width, Uint32 level_height, GameState *game_state, float dt)
 {
-	if (player->entity->state == attack) {
-		if (!player->entity->on_ground)
-			player->entity->state = neutral;
-		player->entity->move = 0;
-	} else if (player->entity->state == knock_back) {
-		player->entity->move = 0;
-	} else {
-		player->entity->move = 1;
+	for (int i = 0; i < bg_tiles->used; i++) {
+		Tile *tile = bg_tiles->vec[i];
+		if (tile->type == level_sign &&
+			player->entity->rect.x < tile->rect.x + tile->rect.w &&
+			player->entity->rect.x + player->entity->rect.w > tile->rect.x &&
+			player->entity->rect.y < tile->rect.y + tile->rect.h &&
+			player->entity->rect.y + player->entity->rect.h > tile->rect.y)
+		{
+			player->next_level = 1;
+		} else {
+			player->next_level = 0;
+		}
 	}
+
+	if (player->entity->state == attack)
+		player->entity->move = 0;
+	else if (player->entity->state == knock_back)
+		player->entity->move = 0;
+	else
+		player->entity->move = 1;
 
 	if (player->left && !player->right && player->entity->move)
 		player->entity->vel_x = -SPEED;
@@ -176,11 +188,11 @@ update_player(Player *player, TileVec *tiles, TileVec *bg_tiles, TileVec *inv_ti
 		if (delta_ticks >= 0 && delta_ticks < 20) {
 			player->attack_frame = 1;
 			player->attack = 1;
-		} else if (delta_ticks >= 20 && delta_ticks < 200)
+		} else if (delta_ticks >= 20 && delta_ticks < 200) {
 			player->attack_frame = 2;
-		else if (delta_ticks >= 200 && delta_ticks < 220)
+		} else if (delta_ticks >= 200 && delta_ticks < 220) {
 			player->attack_frame = 1;
-		else if (delta_ticks >= 220 && delta_ticks < 400) {
+		} else if (delta_ticks >= 220 && delta_ticks < 400) {
 			player->attack_frame = 0;
 			player->attack = 0;
 		} else {
@@ -201,24 +213,22 @@ update_enemies(EnemyVec *enemies, TileVec *tiles, TileVec *bg_tiles, TileVec *in
 	for (int e = 0; e < enemies->used; e++) {
 		Enemy *enemy = enemies->vec[e];
 	
-		if (enemy->entity->state == neutral) {
+		if (enemy->entity->state == neutral)
 			enemy->entity->move = 1;
-		} else if (enemy->entity->state == melee || enemy->entity->state == knock_back || enemy->entity->state == jump) {
+		else if (enemy->entity->state == melee || enemy->entity->state == knock_back || enemy->entity->state == jump)
 			enemy->entity->move = 0;
-		}
 		
 		if (enemy->melee_cooldown) {
 			Uint32 current_tick = SDL_GetTicks();
 			Uint32 delta_ticks = current_tick - enemy->melee_start_tick;
-			if (delta_ticks >= ENEMY_MELEE_COOLDOWN) {
-				enemy->entity->state = neutral;
+			if (delta_ticks >= ENEMY_MELEE_COOLDOWN)
 				enemy->melee_cooldown = 0;
-			}
 		}
 
 		int x = enemy->entity->rect.x + enemy->entity->rect.w / 2 - player->entity->rect.x - player->entity->rect.w / 2;
-		if (x <= ENEMY_ATTACK_RANGE && x > 0 && enemy->entity->state == neutral) {
-			if (x <= ENEMY_JUMP_RANGE && enemy->entity->on_ground && !enemy->melee_cooldown) {
+		int y = enemy->entity->rect.y + enemy->entity->rect.h / 2 - player->entity->rect.y - player->entity->rect.h / 2;
+		if (x <= ENEMY_ATTACK_RANGE_X && x > 0 && y >= -ENEMY_ATTACK_RANGE_Y && y <= ENEMY_ATTACK_RANGE_Y && enemy->entity->state == neutral) {
+			if (x <= ENEMY_JUMP_RANGE_X && enemy->entity->on_ground && !enemy->melee_cooldown) {
 				enemy->entity->flip = 1;
 				enemy->entity->state = melee;
 				enemy->melee_cooldown = 1;
@@ -232,8 +242,8 @@ update_enemies(EnemyVec *enemies, TileVec *tiles, TileVec *bg_tiles, TileVec *in
 				enemy->entity->vel_x = -ENEMY_SPEED;
 				enemy->entity->flip = 1;
 			}
-		} else if (x >= -ENEMY_ATTACK_RANGE && x < 0 && enemy->entity->state == neutral) {
-			if (x >= -ENEMY_JUMP_RANGE && enemy->entity->on_ground && !enemy->melee_cooldown) {
+		} else if (x >= -ENEMY_ATTACK_RANGE_X && x < 0 && y >= -ENEMY_ATTACK_RANGE_Y && y <= ENEMY_ATTACK_RANGE_Y && enemy->entity->state == neutral) {
+			if (x >= -ENEMY_JUMP_RANGE_X && enemy->entity->on_ground && !enemy->melee_cooldown) {
 				enemy->entity->flip = 0;
 				enemy->entity->state = melee;
 				enemy->melee_cooldown = 1;
@@ -340,7 +350,6 @@ update_enemies(EnemyVec *enemies, TileVec *tiles, TileVec *bg_tiles, TileVec *in
 
 		if (enemy->entity->alive &&
 			!enemy->hit_player &&
-			//enemy->entity->state == melee &&
 			enemy->entity->rect.x < player->entity->rect.x + player->entity->rect.w &&
 			enemy->entity->rect.x + enemy->entity->rect.w > player->entity->rect.x &&
 			enemy->entity->rect.y < player->entity->rect.y + player->entity->rect.h &&
@@ -350,22 +359,21 @@ update_enemies(EnemyVec *enemies, TileVec *tiles, TileVec *bg_tiles, TileVec *in
 			player->entity->state = knock_back;
 			if (enemy->entity->flip) {
 				player->entity->vel_x = -KNOCK_BACK_SPEED;
-				if (enemy->entity->state == melee)
+				if (enemy->entity->state == melee) {
 					enemy->entity->vel_x = KNOCK_BACK_SPEED;
+					enemy->entity->vel_y = -KNOCK_BACK_JUMP;
+					enemy->entity->state = knock_back;
+				}
 			} else {
 				player->entity->vel_x = KNOCK_BACK_SPEED;
-				if (enemy->entity->state == melee)
+				if (enemy->entity->state == melee) {
 					enemy->entity->vel_x = -KNOCK_BACK_SPEED;
+					enemy->entity->vel_y = -KNOCK_BACK_JUMP;
+					enemy->entity->state = knock_back;
+				}
 			}
 			player->entity->vel_y = -KNOCK_BACK_JUMP;
-			if (enemy->entity->state == melee)
-				enemy->entity->vel_y = -KNOCK_BACK_JUMP;
 			enemy->hit_player= 1;
-			//enemy->entity->state = neutral;
-			//enemy->entity->vel_x *= -1;
-			//enemy->entity->vel_y *= -1;
-			if (enemy->entity->state == melee)
-				enemy->entity->state = knock_back;
 		} else if (enemy->hit_player &&
 			(enemy->entity->rect.x > player->entity->rect.x + player->entity->rect.w ||
 			 enemy->entity->rect.x + enemy->entity->rect.w < player->entity->rect.x ||
@@ -406,6 +414,13 @@ update_playing_state(Game *game, float dt)
 					game->player->entity->state = attack;
 					game->player->entity->vel_x = 0.0f;
 					game->player->attack_start_tick = SDL_GetTicks();
+				}
+				break;
+			case SDLK_SPACE:
+				printf("wtf gebeurt er\n");
+				if (game->player->next_level) {
+					if (next_level(game) != 0)
+						fprintf(stderr, "Error loading next level\n");
 				}
 				break;
 			}
