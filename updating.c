@@ -9,8 +9,7 @@
 #define CAMERA_MARGIN_Y 63
 #define DEATH_TIME 300
 #define PLAYER_ATTACK_RANGE 6
-#define ENEMY_JUMP_RANGE_X 52 // 48
-#define ENEMY_JUMP_RANGE_Y 64 // 48
+#define ENEMY_JUMP_RANGE 52 // 48
 #define ENEMY_ATTACK_RANGE_X 208 // 208 256
 #define ENEMY_ATTACK_RANGE_Y 80 // 208 256
 #define ENEMY_SPEED 80
@@ -203,8 +202,10 @@ update_player(Player *player, TileVec *tiles, TileVec *bg_tiles, TileVec *inv_ti
 	if (player->entity->hp <= 0)
 		player->entity->alive = 0;
 
-	if (!player->entity->alive)
+	if (!player->entity->alive) {
 		*game_state = death;
+		player->attack = 0;
+	}
 }
 
 void
@@ -228,7 +229,7 @@ update_enemies(EnemyVec *enemies, TileVec *tiles, TileVec *bg_tiles, TileVec *in
 		int x = enemy->entity->rect.x + enemy->entity->rect.w / 2 - player->entity->rect.x - player->entity->rect.w / 2;
 		int y = enemy->entity->rect.y + enemy->entity->rect.h / 2 - player->entity->rect.y - player->entity->rect.h / 2;
 		if (x <= ENEMY_ATTACK_RANGE_X && x > 0 && y >= -ENEMY_ATTACK_RANGE_Y && y <= ENEMY_ATTACK_RANGE_Y && enemy->entity->state == neutral) {
-			if (x <= ENEMY_JUMP_RANGE_X && enemy->entity->on_ground && !enemy->melee_cooldown) {
+			if (x <= ENEMY_JUMP_RANGE && enemy->entity->on_ground && !enemy->melee_cooldown) {
 				enemy->entity->flip = 1;
 				enemy->entity->state = melee;
 				enemy->melee_cooldown = 1;
@@ -243,7 +244,7 @@ update_enemies(EnemyVec *enemies, TileVec *tiles, TileVec *bg_tiles, TileVec *in
 				enemy->entity->flip = 1;
 			}
 		} else if (x >= -ENEMY_ATTACK_RANGE_X && x < 0 && y >= -ENEMY_ATTACK_RANGE_Y && y <= ENEMY_ATTACK_RANGE_Y && enemy->entity->state == neutral) {
-			if (x >= -ENEMY_JUMP_RANGE_X && enemy->entity->on_ground && !enemy->melee_cooldown) {
+			if (x >= -ENEMY_JUMP_RANGE && enemy->entity->on_ground && !enemy->melee_cooldown) {
 				enemy->entity->flip = 0;
 				enemy->entity->state = melee;
 				enemy->melee_cooldown = 1;
@@ -417,7 +418,6 @@ update_playing_state(Game *game, float dt)
 				}
 				break;
 			case SDLK_SPACE:
-				printf("wtf gebeurt er\n");
 				if (game->player->next_level) {
 					if (next_level(game) != 0)
 						fprintf(stderr, "Error loading next level\n");

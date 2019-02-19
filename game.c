@@ -41,7 +41,6 @@ load_level(const char *level_name, Game *game)
 	empty_tile_vec(&game->inv_tiles, 128);
 	empty_enemy_vec(&game->enemies, 32);
 
-	printf("%s\n", level_name);
 	FILE *file = fopen(level_name, "r");
 	char buff[256];
 	int y = 0;
@@ -145,8 +144,6 @@ next_level(Game *game)
 {
 	if (++game->level > 1)
 		game->level = 0;
-
-	printf("%i\n", game->level);
 
 	return load_level(levels[game->level], game);
 }
