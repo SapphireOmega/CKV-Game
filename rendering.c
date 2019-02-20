@@ -62,6 +62,10 @@ render_player(SDL_Renderer *renderer, const GameWindow *game_window, const Camer
 			break;
 		}
 		break;
+	case block:
+		src.x = 128;
+		src.y = 48;
+		break;
 	default:
 		src.x = 49;
 		src.y = 0;

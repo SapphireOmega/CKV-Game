@@ -9,6 +9,7 @@ typedef enum {
 	melee,
 	knock_back,
 	jump,
+	block,
 } EntityState;
 
 typedef struct {

@@ -8,7 +8,8 @@
 #define CAMERA_MARGIN_X 160
 #define CAMERA_MARGIN_Y 63
 #define DEATH_TIME 300
-#define PLAYER_ATTACK_RANGE 6
+#define PLAYER_ATTACK_RANGE_X 6 // 6
+#define PLAYER_ATTACK_RANGE_Y 4
 #define ENEMY_JUMP_RANGE 52 // 48
 #define ENEMY_ATTACK_RANGE_X 208 // 208 256
 #define ENEMY_ATTACK_RANGE_Y 80 // 208 256
@@ -315,8 +316,10 @@ update_enemies(EnemyVec *enemies, TileVec *tiles, TileVec *bg_tiles, TileVec *in
 		if (player->flip &&
 			player->attack &&
 			!enemy->hit &&
-			enemy->entity->rect.x + enemy->entity->rect.w > player->entity->rect.x - PLAYER_ATTACK_RANGE &&
-			enemy->entity->rect.x < player->entity->rect.x + player->entity->rect.w)
+			enemy->entity->rect.x + enemy->entity->rect.w > player->entity->rect.x - PLAYER_ATTACK_RANGE_X &&
+			enemy->entity->rect.x < player->entity->rect.x + player->entity->rect.w - 4 &&
+			enemy->entity->rect.y < player->entity->rect.y + player->entity->rect.h + PLAYER_ATTACK_RANGE_Y &&
+			enemy->entity->rect.y + enemy->entity->rect.h > player->entity->rect.y - PLAYER_ATTACK_RANGE_Y)
 		{
 			enemy->entity->hp -= 1;
 			enemy->entity->state = knock_back;
@@ -326,8 +329,10 @@ update_enemies(EnemyVec *enemies, TileVec *tiles, TileVec *bg_tiles, TileVec *in
 		} else if (!player->flip &&
 			player->attack &&
 			!enemy->hit &&
-			enemy->entity->rect.x < player->entity->rect.x + player->entity->rect.w + PLAYER_ATTACK_RANGE &&
-			enemy->entity->rect.x + enemy->entity->rect.w > player->entity->rect.x)
+			enemy->entity->rect.x < player->entity->rect.x + player->entity->rect.w + PLAYER_ATTACK_RANGE_X &&
+			enemy->entity->rect.x + enemy->entity->rect.w > player->entity->rect.x + 4 &&
+			enemy->entity->rect.y < player->entity->rect.y + player->entity->rect.h + PLAYER_ATTACK_RANGE_Y &&
+			enemy->entity->rect.y + enemy->entity->rect.h > player->entity->rect.y - PLAYER_ATTACK_RANGE_Y)
 		{
 			enemy->entity->hp -= 1;
 			enemy->entity->state = knock_back;
@@ -336,12 +341,17 @@ update_enemies(EnemyVec *enemies, TileVec *tiles, TileVec *bg_tiles, TileVec *in
 			enemy->hit = 1;
 		} else if (player->flip &&
 			enemy->hit &&
-			enemy->entity->rect.x + enemy->entity->rect.w < player->entity->rect.x - PLAYER_ATTACK_RANGE)
+			enemy->entity->rect.x + enemy->entity->rect.w < player->entity->rect.x - PLAYER_ATTACK_RANGE_X)
 		{
 			enemy->hit = 0;
 		} else if (!player->flip &&
 			enemy->hit &&
-			enemy->entity->rect.x > player->entity->rect.x + player->entity->rect.w + PLAYER_ATTACK_RANGE)
+			enemy->entity->rect.x > player->entity->rect.x + player->entity->rect.w + PLAYER_ATTACK_RANGE_X)
+		{
+			enemy->hit = 0;
+		} else if (enemy->hit &&
+			(enemy->entity->rect.y + enemy->entity->rect.h < player->entity->rect.y - PLAYER_ATTACK_RANGE_Y ||
+			enemy->entity->rect.y > player->entity->rect.y + player->entity->rect.h + PLAYER_ATTACK_RANGE_Y))
 		{
 			enemy->hit = 0;
 		}
@@ -417,6 +427,11 @@ update_playing_state(Game *game, float dt)
 					game->player->attack_start_tick = SDL_GetTicks();
 				}
 				break;
+			case SDLK_x:
+				if (game->player->entity->state == neutral) {
+					game->player->entity->state = block;
+				}
+				break;
 			case SDLK_SPACE:
 				if (game->player->next_level) {
 					if (next_level(game) != 0)
@@ -432,6 +447,10 @@ update_playing_state(Game *game, float dt)
 				break;
 			case SDLK_RIGHT:
 					game->player->right = 0;
+				break;
+			case SDLK_x:
+				if (game->player->entity->state == block)
+					game->player->entity->state = neutral;
 				break;
 			}
 		}
