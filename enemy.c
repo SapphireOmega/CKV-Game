@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "enemy.h"
 
 Enemy *

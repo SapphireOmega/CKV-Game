@@ -41,17 +41,17 @@ main(int argc, char *argv[])
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
 		fprintf(stderr, "Error initializing SDL: %s\n", SDL_GetError());
-		return EXIT_FAILURE;
+		return 1;
 	}
 
 	if (!IMG_Init(IMG_INIT_PNG)) {
 		fprintf(stderr, "Error initializing SDL: %s\n", IMG_GetError());
-		return EXIT_FAILURE;
+		return 1;
 	}
 
 	if (TTF_Init() != 0) {
 		fprintf(stderr, "Error initializing SDL_TTF: %s\n", TTF_GetError());
-		return EXIT_FAILURE;
+		return 1;
 	}
 
 	SDL_DisplayMode display_mode;
@@ -60,7 +60,7 @@ main(int argc, char *argv[])
 	SDL_Window *window = SDL_CreateWindow("window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, display_mode.w, display_mode.h, window_flags);
 	if (window == NULL) {
 		fprintf(stderr, "Error creating window: %s\n", SDL_GetError());
-		return EXIT_FAILURE;
+		return 1;
 	}
 
 	float scale;
@@ -76,18 +76,18 @@ main(int argc, char *argv[])
 	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, render_flags);
 	if (renderer == NULL) {
 		fprintf(stderr, "Error creating renderer: %s\n", SDL_GetError());
-		return EXIT_FAILURE;
+		return 1;
 	}
 
 	if (SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND) != 0) {
 		fprintf(stderr, "Error setting blendmode: %s\n", SDL_GetError());
-		return EXIT_FAILURE;
+		return 1;
 	}
 
 	Game *game = create_game(&display_mode, pixel_size, scale);
 	if (!game) {
 		fprintf(stderr, "Error creating game\n");
-		return EXIT_FAILURE;
+		return 1;
 	}
 
 	load_text(renderer, &game->window);
@@ -95,27 +95,27 @@ main(int argc, char *argv[])
 
 	if (init_tile_vec(&game->tiles, 64) != 0) {
 		fprintf(stderr, "Error initializing tile_vec\n");
-		return EXIT_FAILURE;
+		return 1;
 	}
 
 	if (init_tile_vec(&game->bg_tiles, 16) != 0) {
 		fprintf(stderr, "Error initializing tile_vec\n");
-		return EXIT_FAILURE;
+		return 1;
 	}
 
 	if (init_tile_vec(&game->inv_tiles, 16) != 0) {
 		fprintf(stderr, "Error initializing tile_vec\n");
-		return EXIT_FAILURE;
+		return 1;
 	}
 
 	if (init_enemy_vec(&game->enemies, 32) != 0) {
 		fprintf(stderr, "Error initializing enemy_vec\n");
-		return EXIT_FAILURE;
+		return 1;
 	}
 
 	if (load_level("levels/first.lvl", game) != 0) {
 		fprintf(stderr, "Error loading level\n");
-		return EXIT_FAILURE;
+		return 1;
 	}
 
 	Uint32 old_time = 0;
@@ -144,5 +144,5 @@ main(int argc, char *argv[])
 	IMG_Quit();
 	TTF_Quit();
 
-	return EXIT_SUCCESS;
+	return 0;
 }
