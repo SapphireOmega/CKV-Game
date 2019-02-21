@@ -1,4 +1,5 @@
 *.zip
 game
+game.exe
 *.ghc
 *.dll
