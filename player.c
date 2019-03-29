@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "player.h"
 
 Player *
