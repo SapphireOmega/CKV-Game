@@ -113,7 +113,7 @@ main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	if (load_level("levels/first.lvl", game) != 0) {
+	if (load_level("levels/level1.lvl", game) != 0) {
 		fprintf(stderr, "Error loading level\n");
 		return EXIT_FAILURE;
 	}

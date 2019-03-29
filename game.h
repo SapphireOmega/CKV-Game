@@ -8,7 +8,8 @@
 #include "camera.h"
 #include "enemy.h"
 
-const static char *levels[2] = {
+const static char *levels[3] = {
+	"levels/level1.lvl",
 	"levels/first.lvl",
 	"levels/level2.lvl",
 };
